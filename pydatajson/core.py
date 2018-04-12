@@ -1,15 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Módulo principal de pydatajson
 
 Contiene la clase DataJson que reúne los métodos públicos para trabajar con
 archivos data.json.
 """
-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import with_statement
 
 import io
 import json
@@ -36,10 +31,7 @@ from . import federation
 ABSOLUTE_PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 CENTRAL_CATALOG = "http://datos.gob.ar/data.json"
 DATA_FORMATS = [
-    "csv", "xls", "xlsx", "ods", "dta",
-    "shp", "kml",
-    "json", "xml",
-    "zip"
+    "csv", "xls", "xlsx", "ods", "dta", "shp", "kml", "json", "xml", "zip"
 ]
 MIN_DATASET_TITLE = 10
 MIN_DATASET_DESCRIPTION = 20
@@ -51,7 +43,10 @@ class DataJson(dict):
     # Variables por default
     CATALOG_FIELDS_PATH = os.path.join(ABSOLUTE_PROJECT_DIR, "fields")
 
-    def __init__(self, catalog=None, schema_filename=None, schema_dir=None,
+    def __init__(self,
+                 catalog=None,
+                 schema_filename=None,
+                 schema_dir=None,
                  default_values=None):
         """Crea un manipulador de `data.json`s.
 
@@ -66,16 +61,16 @@ class DataJson(dict):
         """
         # se construye el objeto DataJson con la interfaz de un dicconario
         if catalog:
-            catalog = readers.read_catalog(catalog,
-                                           default_values=default_values)
+            catalog = readers.read_catalog(
+                catalog, default_values=default_values)
             for key, value in iteritems(catalog):
                 self[key] = value
             self.has_catalog = True
         else:
             self.has_catalog = False
 
-        self.validator = validation.create_validator(
-            schema_filename, schema_dir)
+        self.validator = validation.create_validator(schema_filename,
+                                                     schema_dir)
 
         # asigno docstrings de los métodos modularizados
         fn_doc = indicators.generate_catalogs_indicators.__doc__
@@ -122,12 +117,13 @@ class DataJson(dict):
     def remove_distribution(self, identifier, dataset_identifier=None):
         for dataset in self["dataset"]:
             for index, distribution in enumerate(dataset["distribution"]):
-                if (distribution["identifier"] == identifier and
-                        (not dataset_identifier or
-                         dataset["identifier"] == dataset_identifier)):
+                if (distribution["identifier"] == identifier
+                        and (not dataset_identifier
+                             or dataset["identifier"] == dataset_identifier)):
                     dataset["distribution"].pop(index)
-                    print("Distribution {} del dataset {} en posicion {} fue eliminada.".format(
-                        identifier, dataset["identifier"], index))
+                    print(
+                        "Distribution {} del dataset {} en posicion {} fue eliminada.".
+                        format(identifier, dataset["identifier"], index))
                     return
 
         print("No se encontro la distribucion {}.".format(identifier))
@@ -156,8 +152,8 @@ class DataJson(dict):
             "validator_value": error.validator_value,
             "path": list(error.path),
             # La instancia validada es irrelevante si el error es de tipo 1
-            "instance": (None if error.validator == "required" else
-                         error.instance)
+            "instance": (None
+                         if error.validator == "required" else error.instance)
         }
 
         # Identifico a qué nivel de jerarquía sucedió el error.
@@ -173,7 +169,10 @@ class DataJson(dict):
 
         return new_response
 
-    def validate_catalog(self, catalog=None, only_errors=False, fmt="dict",
+    def validate_catalog(self,
+                         catalog=None,
+                         only_errors=False,
+                         fmt="dict",
                          export_path=None):
         catalog = catalog or self
         return validation.validate_catalog(
@@ -183,8 +182,7 @@ class DataJson(dict):
     def _stringify_list(str_or_list):
 
         if isinstance(str_or_list, list):
-            strings = [s for s in str_or_list
-                       if isinstance(s, string_types)]
+            strings = [s for s in str_or_list if isinstance(s, string_types)]
             stringified_list = ", ".join(strings)
         elif isinstance(str_or_list, string_types):
             stringified_list = str_or_list
@@ -217,8 +215,9 @@ class DataJson(dict):
 
             return "\"{}\": {}".format(title, url)
 
-        distributions = [d for d in dataset["distribution"]
-                         if isinstance(d, dict)]
+        distributions = [
+            d for d in dataset["distribution"] if isinstance(d, dict)
+        ]
 
         # crea lista de distribuciones
         distributions_list = None
@@ -243,8 +242,7 @@ class DataJson(dict):
         fields["dataset_theme"] = themes
         fields["dataset_landingPage"] = dataset.get("landingPage")
         fields["dataset_landingPage_generated"] = cls._generate_landingPage(
-            catalog_homepage, dataset.get("identifier")
-        )
+            catalog_homepage, dataset.get("identifier"))
         fields["dataset_issued"] = dataset.get("issued")
         fields["dataset_modified"] = dataset.get("modified")
         fields["distributions_formats"] = distributions_formats
@@ -287,10 +285,14 @@ class DataJson(dict):
 
         return fields
 
-    def _dataset_report(
-            self, dataset, dataset_validation, dataset_index,
-            catalog_fields, harvest='none', report=None, catalog_homepage=None
-    ):
+    def _dataset_report(self,
+                        dataset,
+                        dataset_validation,
+                        dataset_index,
+                        catalog_fields,
+                        harvest='none',
+                        report=None,
+                        catalog_homepage=None):
         """ Genera una línea del `catalog_report`, correspondiente a un dataset
         de los que conforman el catálogo analizado."""
 
@@ -309,8 +311,8 @@ class DataJson(dict):
         elif harvest == 'none':
             dataset_report["harvest"] = 0
         elif harvest == 'valid':
-            dataset_report["harvest"] = (
-                int(dataset_report["valid_dataset_metadata"]))
+            dataset_report["harvest"] = (int(
+                dataset_report["valid_dataset_metadata"]))
         elif harvest == 'good':
             valid_metadata = int(dataset_report["valid_dataset_metadata"]) == 1
             dataset_report["harvest"] = 1 if valid_metadata and good_qa else 0
@@ -324,8 +326,7 @@ el argumento 'report'. Por favor, intentelo nuevamente.""")
             datasets_to_harvest = self._extract_datasets_to_harvest(report)
             dataset_report["harvest"] = (
                 1 if (dataset_report["catalog_metadata_url"],
-                      dataset.get("title")) in datasets_to_harvest
-                else 0)
+                      dataset.get("title")) in datasets_to_harvest else 0)
         else:
             raise ValueError("""
 {} no es un criterio de harvest reconocido. Pruebe con 'all', 'none', 'valid' o
@@ -333,8 +334,7 @@ el argumento 'report'. Por favor, intentelo nuevamente.""")
 
         dataset_report.update(
             self._dataset_report_helper(
-                dataset, catalog_homepage=catalog_homepage)
-        )
+                dataset, catalog_homepage=catalog_homepage))
 
         dataset_report["notas"] = "\n\n".join(notes)
 
@@ -346,7 +346,8 @@ el argumento 'report'. Por favor, intentelo nuevamente.""")
         # 1. VALIDACIONES
         # chequea que haya por lo menos algún formato de datos reconocido
         has_data_format = False
-        formats = self._count_distribution_formats_dataset(dataset).keys()
+        formats = list(
+            self._count_distribution_formats_dataset(dataset).keys())
         for distrib_format in formats:
             for data_format in DATA_FORMATS:
                 if data_format.lower() in distrib_format.lower():
@@ -369,8 +370,8 @@ el argumento 'report'. Por favor, intentelo nuevamente.""")
             has_min_desc = False
 
         # 2. EVALUACION DE COSECHA: evalua si se cosecha o no el dataset
-        harvest = (has_title and has_description and
-                   has_data_format and has_min_title and has_min_desc)
+        harvest = (has_title and has_description and has_data_format
+                   and has_min_title and has_min_desc)
 
         # 3. NOTAS: genera notas de validación
         notes = []
@@ -391,8 +392,12 @@ el argumento 'report'. Por favor, intentelo nuevamente.""")
 
         return harvest, notes
 
-    def catalog_report(self, catalog, harvest='none', report=None,
-                       catalog_id=None, catalog_homepage=None,
+    def catalog_report(self,
+                       catalog,
+                       harvest='none',
+                       report=None,
+                       catalog_id=None,
+                       catalog_homepage=None,
                        catalog_org=None):
         """Genera un reporte sobre los datasets de un único catálogo.
 
@@ -415,31 +420,37 @@ el argumento 'report'. Por favor, intentelo nuevamente.""")
         datasets_validations = validation["error"]["dataset"]
 
         catalog_fields = self._catalog_report_helper(
-            catalog, catalog_validation, url, catalog_id, catalog_org
-        )
+            catalog, catalog_validation, url, catalog_id, catalog_org)
 
         if "dataset" in catalog and isinstance(catalog["dataset"], list):
-            datasets = [d if isinstance(d, dict) else {} for d in
-                        catalog["dataset"]]
+            datasets = [
+                d if isinstance(d, dict) else {} for d in catalog["dataset"]
+            ]
         else:
             datasets = []
 
         catalog_report = [
             self._dataset_report(
-                dataset, datasets_validations[index], index,
-                catalog_fields, harvest, report=report,
-                catalog_homepage=catalog_homepage
-            )
+                dataset,
+                datasets_validations[index],
+                index,
+                catalog_fields,
+                harvest,
+                report=report,
+                catalog_homepage=catalog_homepage)
             for index, dataset in enumerate(datasets)
         ]
 
         return catalog_report
 
-    def generate_datasets_report(
-            self, catalogs, harvest='valid', report=None,
-            export_path=None, catalog_ids=None, catalog_homepages=None,
-            catalog_orgs=None
-    ):
+    def generate_datasets_report(self,
+                                 catalogs,
+                                 harvest='valid',
+                                 report=None,
+                                 export_path=None,
+                                 catalog_ids=None,
+                                 catalog_homepages=None,
+                                 catalog_orgs=None):
         """Genera un reporte sobre las condiciones de la metadata de los
         datasets contenidos en uno o varios catálogos.
 
@@ -468,27 +479,31 @@ el argumento 'report'. Por favor, intentelo nuevamente.""")
         if isinstance(catalogs, list):
             assert not catalog_ids or len(catalogs) == len(catalog_ids)
             assert not catalog_orgs or len(catalogs) == len(catalog_orgs)
-            assert not catalog_homepages or len(
-                catalogs) == len(catalog_homepages)
+            assert not catalog_homepages or len(catalogs) == len(
+                catalog_homepages)
 
         # Si se pasa un único catálogo, genero una lista que lo contenga
-        if isinstance(catalogs, string_types + (dict,)):
+        if isinstance(catalogs, string_types + (dict, )):
             catalogs = [catalogs]
-        if not catalog_ids or isinstance(catalog_ids, string_types + (dict,)):
+        if not catalog_ids or isinstance(catalog_ids, string_types + (dict, )):
             catalog_ids = [catalog_ids] * len(catalogs)
-        if not catalog_orgs or isinstance(catalog_orgs, string_types + (dict,)):
+        if not catalog_orgs or isinstance(catalog_orgs, string_types +
+                                          (dict, )):
             catalog_orgs = [catalog_orgs] * len(catalogs)
         if not catalog_homepages or isinstance(catalog_homepages,
-                                               string_types + (dict,)):
+                                               string_types + (dict, )):
             catalog_homepages = [catalog_homepages] * len(catalogs)
 
         catalogs_reports = [
             self.catalog_report(
-                catalog, harvest, report, catalog_id=catalog_id,
-                catalog_homepage=catalog_homepage, catalog_org=catalog_org
-            )
-            for catalog, catalog_id, catalog_org, catalog_homepage in
-            zip(catalogs, catalog_ids, catalog_orgs, catalog_homepages)
+                catalog,
+                harvest,
+                report,
+                catalog_id=catalog_id,
+                catalog_homepage=catalog_homepage,
+                catalog_org=catalog_org)
+            for catalog, catalog_id, catalog_org, catalog_homepage in zip(
+                catalogs, catalog_ids, catalog_orgs, catalog_homepages)
         ]
 
         full_report = []
@@ -498,40 +513,81 @@ el argumento 'report'. Por favor, intentelo nuevamente.""")
         if export_path:
             # config styles para reportes en excel
             alignment = Alignment(
-                wrap_text=True,
-                shrink_to_fit=True,
-                vertical="center"
-            )
+                wrap_text=True, shrink_to_fit=True, vertical="center")
             column_styles = {
-                "dataset_title": {"width": 35},
-                "dataset_description": {"width": 35},
-                "dataset_publisher_name": {"width": 35},
-                "dataset_issued": {"width": 20},
-                "dataset_modified": {"width": 20},
-                "distributions_formats": {"width": 15},
-                "distributions_list": {"width": 90},
-                "notas": {"width": 50},
+                "dataset_title": {
+                    "width": 35
+                },
+                "dataset_description": {
+                    "width": 35
+                },
+                "dataset_publisher_name": {
+                    "width": 35
+                },
+                "dataset_issued": {
+                    "width": 20
+                },
+                "dataset_modified": {
+                    "width": 20
+                },
+                "distributions_formats": {
+                    "width": 15
+                },
+                "distributions_list": {
+                    "width": 90
+                },
+                "notas": {
+                    "width": 50
+                },
             }
             cell_styles = [
-                {"alignment": Alignment(vertical="center")},
-                {"row": 1, "font": Font(bold=True)},
-                {"col": "dataset_title", "alignment": alignment},
-                {"col": "dataset_description", "alignment": alignment},
-                {"col": "dataset_publisher_name", "alignment": alignment},
-                {"col": "distributions_formats", "alignment": alignment},
-                {"col": "distributions_list", "alignment": alignment},
-                {"col": "notas", "alignment": alignment},
+                {
+                    "alignment": Alignment(vertical="center")
+                },
+                {
+                    "row": 1,
+                    "font": Font(bold=True)
+                },
+                {
+                    "col": "dataset_title",
+                    "alignment": alignment
+                },
+                {
+                    "col": "dataset_description",
+                    "alignment": alignment
+                },
+                {
+                    "col": "dataset_publisher_name",
+                    "alignment": alignment
+                },
+                {
+                    "col": "distributions_formats",
+                    "alignment": alignment
+                },
+                {
+                    "col": "distributions_list",
+                    "alignment": alignment
+                },
+                {
+                    "col": "notas",
+                    "alignment": alignment
+                },
             ]
 
             # crea tabla
-            writers.write_table(table=full_report, path=export_path,
-                                column_styles=column_styles,
-                                cell_styles=cell_styles)
+            writers.write_table(
+                table=full_report,
+                path=export_path,
+                column_styles=column_styles,
+                cell_styles=cell_styles)
         else:
             return full_report
 
-    def generate_harvester_config(self, catalogs=None, harvest='valid',
-                                  report=None, frequency='R/P1D',
+    def generate_harvester_config(self,
+                                  catalogs=None,
+                                  harvest='valid',
+                                  report=None,
+                                  frequency='R/P1D',
                                   export_path=None):
         """Genera un archivo de configuración del harvester a partir de un
         reporte, o de un conjunto de catálogos y un criterio de cosecha
@@ -561,7 +617,7 @@ el argumento 'report'. Por favor, intentelo nuevamente.""")
             por cada dataset a cosechar.
         """
         # Si se pasa un único catálogo, genero una lista que lo contenga
-        if isinstance(catalogs, string_types + (dict,)):
+        if isinstance(catalogs, string_types + (dict, )):
             catalogs = [catalogs]
 
         if harvest == 'report':
@@ -594,8 +650,7 @@ el argumento 'report'. Por favor, intentelo nuevamente.""")
             OrderedDict(
                 # Retengo únicamente los campos que necesita el harvester
                 [(config_translator.get(k, k), v)
-                 for (k, v) in dataset.items() if k in config_keys]
-            )
+                 for (k, v) in list(dataset.items()) if k in config_keys])
             # Para aquellost datasets marcados con 'harvest'==1
             for dataset in datasets_report if bool(int(dataset["harvest"]))
         ]
@@ -610,8 +665,7 @@ el argumento 'report'. Por favor, intentelo nuevamente.""")
 
         if frequency:
             valid_patterns = [
-                "^R/P\\d+(\\.\\d+)?[Y|M|W|D]$",
-                "^R/PT\\d+(\\.\\d+)?[H|M|S]$"
+                "^R/P\\d+(\\.\\d+)?[Y|M|W|D]$", "^R/PT\\d+(\\.\\d+)?[H|M|S]$"
             ]
 
             if any([re.match(pat, frequency) for pat in valid_patterns]):
@@ -627,8 +681,11 @@ actualizacion original de cada dataset.""".format(frequency))
         else:
             return harvester_config
 
-    def generate_harvestable_catalogs(self, catalogs, harvest='all',
-                                      report=None, export_path=None):
+    def generate_harvestable_catalogs(self,
+                                      catalogs,
+                                      harvest='all',
+                                      report=None,
+                                      export_path=None):
         """Filtra los catálogos provistos según el criterio determinado en
         `harvest`.
 
@@ -651,12 +708,14 @@ actualizacion original de cada dataset.""".format(frequency))
         """
         assert isinstance(catalogs, string_types + (dict, list))
         # Si se pasa un único catálogo, genero una lista que lo contenga
-        if isinstance(catalogs, string_types + (dict,)):
+        if isinstance(catalogs, string_types + (dict, )):
             catalogs = [catalogs]
 
         harvestable_catalogs = [readers.read_catalog(c) for c in catalogs]
-        catalogs_urls = [catalog if isinstance(catalog, string_types)
-                         else None for catalog in catalogs]
+        catalogs_urls = [
+            catalog if isinstance(catalog, string_types) else None
+            for catalog in catalogs
+        ]
 
         # aplica los criterios de cosecha
         if harvest == 'all':
@@ -667,7 +726,9 @@ actualizacion original de cada dataset.""".format(frequency))
         elif harvest == 'valid':
             report = self.generate_datasets_report(catalogs, harvest)
             return self.generate_harvestable_catalogs(
-                catalogs=catalogs, harvest='report', report=report,
+                catalogs=catalogs,
+                harvest='report',
+                report=report,
                 export_path=export_path)
         elif harvest == 'report':
             if not report:
@@ -677,12 +738,12 @@ el argumento 'report'. Por favor, intentelo nuevamente.""")
             datasets_to_harvest = self._extract_datasets_to_harvest(report)
             for idx_cat, catalog in enumerate(harvestable_catalogs):
                 catalog_url = catalogs_urls[idx_cat]
-                if ("dataset" in catalog and
-                        isinstance(catalog["dataset"], list)):
+                if ("dataset" in catalog
+                        and isinstance(catalog["dataset"], list)):
                     catalog["dataset"] = [
                         dataset for dataset in catalog["dataset"]
-                        if (catalog_url, dataset.get("title")) in
-                        datasets_to_harvest
+                        if (catalog_url,
+                            dataset.get("title")) in datasets_to_harvest
                     ]
                 else:
                     catalog["dataset"] = []
@@ -731,8 +792,9 @@ el argumento 'report'. Por favor, intentelo nuevamente.""")
         # Trato de leer todos los datasets bien formados de la lista
         # catalog["dataset"], si existe.
         if "dataset" in catalog and isinstance(catalog["dataset"], list):
-            datasets = [d if isinstance(d, dict) else {} for d in
-                        catalog["dataset"]]
+            datasets = [
+                d if isinstance(d, dict) else {} for d in catalog["dataset"]
+            ]
         else:
             # Si no, considero que no hay datasets presentes
             datasets = []
@@ -789,8 +851,8 @@ el argumento 'report'. Por favor, intentelo nuevamente.""")
         catalog = readers.read_catalog(catalog)
         validation = self.validate_catalog(catalog)
         # Solo necesito indicadores para un catalogo
-        indicators = self.generate_catalogs_indicators(
-            catalog, CENTRAL_CATALOG)[0][0]
+        indicators = self.generate_catalogs_indicators(catalog,
+                                                       CENTRAL_CATALOG)[0][0]
 
         readme_template = """
 # Catálogo: {title}
@@ -847,25 +909,38 @@ Por favor, consulte el informe [`datasets.csv`](datasets.csv).
         ])
 
         content = {
-            "title": catalog.get("title"),
-            "publisher_name": helpers.traverse_dict(
-                catalog, ["publisher", "name"]),
-            "publisher_mbox": helpers.traverse_dict(
-                catalog, ["publisher", "mbox"]),
-            "catalog_path_or_url": catalog_path_or_url,
-            "description": catalog.get("description"),
-            "global_status": validation["status"],
-            "catalog_status": validation["error"]["catalog"]["status"],
-            "no_of_datasets": len(catalog["dataset"]),
-            "no_of_distributions": sum([len(dataset["distribution"]) for
-                                        dataset in catalog["dataset"]]),
-            "federated_datasets": indicators["datasets_federados_cant"],
-            "not_federated_datasets": indicators["datasets_no_federados_cant"],
-            "not_federated_datasets_pct": (
-                100.0 - indicators["datasets_federados_pct"]),
-            "not_federated_datasets_list": not_federated_datasets_list,
-            "federated_removed_datasets_list": federated_removed_datasets_list,
-            "federated_datasets_list": federated_datasets_list,
+            "title":
+            catalog.get("title"),
+            "publisher_name":
+            helpers.traverse_dict(catalog, ["publisher", "name"]),
+            "publisher_mbox":
+            helpers.traverse_dict(catalog, ["publisher", "mbox"]),
+            "catalog_path_or_url":
+            catalog_path_or_url,
+            "description":
+            catalog.get("description"),
+            "global_status":
+            validation["status"],
+            "catalog_status":
+            validation["error"]["catalog"]["status"],
+            "no_of_datasets":
+            len(catalog["dataset"]),
+            "no_of_distributions":
+            sum([
+                len(dataset["distribution"]) for dataset in catalog["dataset"]
+            ]),
+            "federated_datasets":
+            indicators["datasets_federados_cant"],
+            "not_federated_datasets":
+            indicators["datasets_no_federados_cant"],
+            "not_federated_datasets_pct":
+            (100.0 - indicators["datasets_federados_pct"]),
+            "not_federated_datasets_list":
+            not_federated_datasets_list,
+            "federated_removed_datasets_list":
+            federated_removed_datasets_list,
+            "federated_datasets_list":
+            federated_datasets_list,
         }
 
         catalog_readme = readme_template.format(**content)
@@ -888,19 +963,22 @@ Por favor, consulte el informe [`datasets.csv`](datasets.csv).
             list: Lista de tuplas con los títulos de catálogo y dataset de cada
             reporte extraído.
         """
-        assert isinstance(report, string_types + (list,))
+        assert isinstance(report, string_types + (list, ))
 
         # Si `report` es una lista de tuplas con longitud 2, asumimos que es un
         # reporte procesado para extraer los datasets a harvestear. Se devuelve
         # intacta.
-        if (isinstance(report, list) and all([isinstance(x, tuple) and
-                                              len(x) == 2 for x in report])):
+        if (isinstance(report, list)
+                and all([isinstance(x, tuple) and len(x) == 2
+                         for x in report])):
             return report
 
         table = readers.read_table(report)
-        table_keys = table[0].keys()
-        expected_keys = ["catalog_metadata_url", "dataset_title",
-                         "dataset_accrualPeriodicity"]
+        table_keys = list(table[0].keys())
+        expected_keys = [
+            "catalog_metadata_url", "dataset_title",
+            "dataset_accrualPeriodicity"
+        ]
 
         # Verifico la presencia de las claves básicas de un config de harvester
         for key in expected_keys:
@@ -911,14 +989,13 @@ El reporte no contiene la clave obligatoria {}. Pruebe con otro archivo.
 
         if "harvest" in table_keys:
             # El archivo es un reporte de datasets.
-            datasets_to_harvest = [
-                (row["catalog_metadata_url"], row["dataset_title"]) for row in
-                table if int(row["harvest"])]
+            datasets_to_harvest = [(row["catalog_metadata_url"],
+                                    row["dataset_title"]) for row in table
+                                   if int(row["harvest"])]
         else:
             # El archivo es un config de harvester.
-            datasets_to_harvest = [
-                (row["catalog_metadata_url"], row["dataset_title"]) for row in
-                table]
+            datasets_to_harvest = [(row["catalog_metadata_url"],
+                                    row["dataset_title"]) for row in table]
 
         return datasets_to_harvest
 
@@ -969,7 +1046,7 @@ El reporte no contiene la clave obligatoria {}. Pruebe con otro archivo.
             'total_requerido': 0
         }
 
-        for k, v in fields.items():
+        for k, v in list(fields.items()):
             # Si la clave es un diccionario se implementa recursivamente el
             # mismo algoritmo
             if isinstance(v, dict):
@@ -1024,8 +1101,10 @@ El reporte no contiene la clave obligatoria {}. Pruebe con otro archivo.
 
         return False
 
-    def generate_dataset_documentation(self, dataset_identifier,
-                                       export_path=None, catalog=None):
+    def generate_dataset_documentation(self,
+                                       dataset_identifier,
+                                       export_path=None,
+                                       catalog=None):
         """Genera texto en markdown a partir de los metadatos de una `dataset`.
 
         Args:
@@ -1050,9 +1129,11 @@ El reporte no contiene la clave obligatoria {}. Pruebe con otro archivo.
         else:
             return text
 
-    def make_catalogs_backup(self, catalogs=None,
+    def make_catalogs_backup(self,
+                             catalogs=None,
                              local_catalogs_dir=".",
-                             copy_metadata=True, copy_data=True):
+                             copy_metadata=True,
+                             copy_data=True):
         """Realiza copia de los datos y metadatos de uno o más catálogos.
 
         Args:

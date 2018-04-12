@@ -19,36 +19,20 @@ def to_dict(table_list):
 
 
 CSV_TABLE = [
-    to_dict([(u'Plato', u'Milanesa'),
-             (u'Precio', u'Bajo'),
-             (u'Sabor', u'666')]),
-    to_dict([(u'Plato', u'Thoné, Vitel'),
-             (u'Precio', u'Alto'),
-             (u'Sabor', u'8000')]),
-    to_dict([(u'Plato', u'Aceitunas'),
-             (u'Precio', u''),
-             (u'Sabor', u'15')])
+    to_dict([('Plato', 'Milanesa'), ('Precio', 'Bajo'), ('Sabor', '666')]),
+    to_dict([('Plato', 'Thoné, Vitel'), ('Precio', 'Alto'), ('Sabor',
+                                                             '8000')]),
+    to_dict([('Plato', 'Aceitunas'), ('Precio', ''), ('Sabor', '15')])
 ]
 
 WRITE_XLSX_TABLE = [
-    to_dict([(u'Plato', u'Milanesa'),
-             (u'Precio', u'Bajo'),
-             (u'Sabor', 666)]),
-    to_dict([(u'Plato', u'Thoné, Vitel'),
-             (u'Precio', u'Alto'),
-             (u'Sabor', 8000)]),
-    to_dict([(u'Plato', u'Aceitunas'),
-             (u'Precio', None),
-             (u'Sabor', 15)])
+    to_dict([('Plato', 'Milanesa'), ('Precio', 'Bajo'), ('Sabor', 666)]),
+    to_dict([('Plato', 'Thoné, Vitel'), ('Precio', 'Alto'), ('Sabor', 8000)]),
+    to_dict([('Plato', 'Aceitunas'), ('Precio', None), ('Sabor', 15)])
 ]
 
 READ_XLSX_TABLE = [
-    to_dict([(u'Plato', u'Milanesa'),
-             (u'Precio', u'Bajo'),
-             (u'Sabor', 666)]),
-    to_dict([(u'Plato', u'Thoné, Vitel'),
-             (u'Precio', u'Alto'),
-             (u'Sabor', 8000)]),
-    to_dict([(u'Plato', u'Aceitunas'),
-             (u'Sabor', 15)])
+    to_dict([('Plato', 'Milanesa'), ('Precio', 'Bajo'), ('Sabor', 666)]),
+    to_dict([('Plato', 'Thoné, Vitel'), ('Precio', 'Alto'), ('Sabor', 8000)]),
+    to_dict([('Plato', 'Aceitunas'), ('Sabor', 15)])
 ]

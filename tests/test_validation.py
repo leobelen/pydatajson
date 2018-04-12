@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function, unicode_literals, with_statement
-
 import json
 import os.path
 import re
@@ -22,9 +20,10 @@ import io
 from .context import pydatajson
 from .support.decorators import RESULTS_DIR
 
-my_vcr = vcr.VCR(path_transformer=vcr.VCR.ensure_suffix('.yaml'),
-                 cassette_library_dir=os.path.join("tests", "cassetes"),
-                 record_mode='once')
+my_vcr = vcr.VCR(
+    path_transformer=vcr.VCR.ensure_suffix('.yaml'),
+    cassette_library_dir=os.path.join("tests", "cassetes"),
+    record_mode='once')
 
 
 class TestDataJsonTestCase(object):
@@ -60,10 +59,13 @@ class TestDataJsonTestCase(object):
         response_bool = self.dj.is_valid_catalog(sample_path)
         response_dict = self.dj.validate_catalog(sample_path)
 
-        print(text_type(json.dumps(
-            response_dict, indent=4, separators=(",", ": "),
-            ensure_ascii=False
-        )))
+        print(
+            text_type(
+                json.dumps(
+                    response_dict,
+                    indent=4,
+                    separators=(",", ": "),
+                    ensure_ascii=False)))
 
         if expected_dict["status"] == "OK":
             assert_true(response_bool)
@@ -92,61 +94,83 @@ class TestDataJsonTestCase(object):
         path = ['error', 'catalog', 'errors', 0, 'message']
         regex = '\{.*\} is not of type %s' % jsonschema_str('array')
 
-        self.validate_message_with_file(case_filename, expected_valid, path, regex)
+        self.validate_message_with_file(case_filename, expected_valid, path,
+                                        regex)
 
     def test_invalid_dataset_theme_type(self):
         case_filename = "invalid_dataset_theme_type"
         expected_valid = False
         path = ['error', 'dataset', 0, 'errors', 0, 'message']
-        regex = "%s is not valid under any of the given schemas" % jsonschema_str('contrataciones')
-        self.validate_message_with_file(case_filename, expected_valid, path, regex)
+        regex = "%s is not valid under any of the given schemas" % jsonschema_str(
+            'contrataciones')
+        self.validate_message_with_file(case_filename, expected_valid, path,
+                                        regex)
 
     def test_several_assorted_errors(self):
         case_filename = "several_assorted_errors"
         expected_errors = [
-            (
-                ['error', 'catalog', 'errors', ],
-                "%s is a required property" % jsonschema_str('title')
-            ),
-            (
-                ['error', 'catalog', 'errors', ],
-                "%s is not valid under any of the given schemas" % jsonschema_str('')
-            ),
-            (
-                ['error', 'catalog', 'errors', ], "%s is not a %s" % (
-                    jsonschema_str('datosmodernizacion.gob.ar'), jsonschema_str('email'))
-            ),
-            (
-                ['error', 'catalog', 'errors', ],
-                "%s is not valid under any of the given schemas" % jsonschema_str('datos.gob.ar')
-            ),
-            (
-                ['error', 'dataset', 0, 'errors', ],
-                "%s is too long" % jsonschema_str('title' * 25)
-            ),
-            (
-                ['error', 'dataset', 0, 'errors', ],
-                "123 is not valid under any of the given schemas"
-            ),
-            (
-                ['error', 'dataset', 0, 'errors', ],
-                "%s is not valid under any of the given schemas" %
-                jsonschema_str('convocatoriasabiertasduranteela.*o.csv')
-            ),
-            (
-                ['error', 'dataset', 0, 'errors', ],
-                "\[.*\] is not of type %s" % jsonschema_str('object')
-            ),
-            (
-                ['error', 'dataset', 0, 'errors', ],
-                "\[%s\] is not valid under any of the given schemas" % jsonschema_str('string')
-            ),
+            ([
+                'error',
+                'catalog',
+                'errors',
+            ], "%s is a required property" % jsonschema_str('title')),
+            ([
+                'error',
+                'catalog',
+                'errors',
+            ], "%s is not valid under any of the given schemas" %
+             jsonschema_str('')),
+            ([
+                'error',
+                'catalog',
+                'errors',
+            ], "%s is not a %s" % (jsonschema_str('datosmodernizacion.gob.ar'),
+                                   jsonschema_str('email'))),
+            ([
+                'error',
+                'catalog',
+                'errors',
+            ], "%s is not valid under any of the given schemas" %
+             jsonschema_str('datos.gob.ar')),
+            ([
+                'error',
+                'dataset',
+                0,
+                'errors',
+            ], "%s is too long" % jsonschema_str('title' * 25)),
+            ([
+                'error',
+                'dataset',
+                0,
+                'errors',
+            ], "123 is not valid under any of the given schemas"),
+            ([
+                'error',
+                'dataset',
+                0,
+                'errors',
+            ], "%s is not valid under any of the given schemas" %
+             jsonschema_str('convocatoriasabiertasduranteela.*o.csv')),
+            ([
+                'error',
+                'dataset',
+                0,
+                'errors',
+            ], "\[.*\] is not of type %s" % jsonschema_str('object')),
+            ([
+                'error',
+                'dataset',
+                0,
+                'errors',
+            ], "\[%s\] is not valid under any of the given schemas" %
+             jsonschema_str('string')),
         ]
 
         for path, regex in expected_errors:
             yield self.validate_contains_message_with_file, case_filename, path, regex
 
-    def validate_message_with_file(self, case_filename, expected_valid, path, regex):
+    def validate_message_with_file(self, case_filename, expected_valid, path,
+                                   regex):
         sample_path = os.path.join(self.SAMPLES_DIR, case_filename + ".json")
 
         self.validate_string_in(sample_path, path, regex)
@@ -196,14 +220,17 @@ class TestDataJsonTestCase(object):
         """ Testea `validate_catalog` contra un data.json remoto invalido."""
 
         errors = [
-            (
-                ['error', 'catalog', 'errors', ],
-                "%s is too short" % jsonschema_str('')
-            ),
-            (
-                ['error', 'catalog', 'errors', ],
-                "%s is not a %s" % (jsonschema_str(''), jsonschema_str('email'))
-            ),
+            ([
+                'error',
+                'catalog',
+                'errors',
+            ], "%s is too short" % jsonschema_str('')),
+            ([
+                'error',
+                'catalog',
+                'errors',
+            ], "%s is not a %s" % (jsonschema_str(''),
+                                   jsonschema_str('email'))),
         ]
         for path, regex in errors:
             with my_vcr.use_cassette('test_validate_bad_remote_datajson'):
@@ -220,14 +247,17 @@ class TestDataJsonTestCase(object):
     def test_validate_invalid_remote_datajson_has_errors2(self):
         """ Testea `validate_catalog` contra un data.json remoto invalido."""
         errors = [
-            (
-                ['error', 'catalog', 'errors', ],
-                "%s is not a %s" % (jsonschema_str(''), jsonschema_str('email'))
-            ),
-            (
-                ['error', 'catalog', 'errors', ],
-                "%s is too short" % jsonschema_str('')
-            ),
+            ([
+                'error',
+                'catalog',
+                'errors',
+            ], "%s is not a %s" % (jsonschema_str(''),
+                                   jsonschema_str('email'))),
+            ([
+                'error',
+                'catalog',
+                'errors',
+            ], "%s is too short" % jsonschema_str('')),
         ]
         for path, regex in errors:
             with my_vcr.use_cassette('test_validate_bad_remote_datajson2'):
@@ -240,21 +270,22 @@ class TestDataJsonTestCase(object):
         datajson_path = "tests/samples/full_data.json"
         datajson = json.load(open(datajson_path))
 
-        valid_values = ['R/P10Y', 'R/P4Y', 'R/P3Y', 'R/P2Y', 'R/P1Y',
-                        'R/P6M', 'R/P4M', 'R/P3M', 'R/P2M', 'R/P1M',
-                        'R/P0.5M', 'R/P0.33M', 'R/P1W', 'R/P0.5W',
-                        'R/P0.33W', 'R/P1D', 'R/PT1H', 'R/PT1S',
-                        'eventual']
+        valid_values = [
+            'R/P10Y', 'R/P4Y', 'R/P3Y', 'R/P2Y', 'R/P1Y', 'R/P6M', 'R/P4M',
+            'R/P3M', 'R/P2M', 'R/P1M', 'R/P0.5M', 'R/P0.33M', 'R/P1W',
+            'R/P0.5W', 'R/P0.33W', 'R/P1D', 'R/PT1H', 'R/PT1S', 'eventual'
+        ]
 
         for value in valid_values:
             datajson["dataset"][0]["accrualPeriodicity"] = value
             res = self.dj.is_valid_catalog(datajson)
             assert_true(res, msg=value)
 
-        invalid_values = ['RP10Y', 'R/PY', 'R/P3', 'RR/P2Y', 'R/PnY',
-                          'R/P6MT', 'R/PT', 'R/T1M', 'R/P0.M', '/P0.33M',
-                          'R/P1Week', 'R/P.5W', 'R/P', 'R/T', 'R/PT1H3M',
-                          'eventual ', '']
+        invalid_values = [
+            'RP10Y', 'R/PY', 'R/P3', 'RR/P2Y', 'R/PnY', 'R/P6MT', 'R/PT',
+            'R/T1M', 'R/P0.M', '/P0.33M', 'R/P1Week', 'R/P.5W', 'R/P', 'R/T',
+            'R/PT1H3M', 'eventual ', ''
+        ]
 
         for value in invalid_values:
             datajson["dataset"][0]["accrualPeriodicity"] = value

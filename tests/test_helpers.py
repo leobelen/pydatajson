@@ -1,11 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Tests del modulo pydatajson."""
-
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import with_statement
 
 import os.path
 import unittest
@@ -27,15 +22,23 @@ class HelpersTestCase(unittest.TestCase):
         workbook = pyxl.load_workbook(workbook_path)
 
         expected_tables = {
-            "Imperio": [
-                {"Nombre": "Darth Vader", "Jedi": "Poderoso"},
-                {"Nombre": "Kylo Ren", "Jedi": "Mas o Menos"}
-            ],
-            "Rebeldes": [
-                {"Nombre": "Luke", "Edad": 56},
-                {"Nombre": "Han", "Edad": 122},
-                {"Nombre": "Yoda", "Edad": 0}
-            ]
+            "Imperio": [{
+                "Nombre": "Darth Vader",
+                "Jedi": "Poderoso"
+            }, {
+                "Nombre": "Kylo Ren",
+                "Jedi": "Mas o Menos"
+            }],
+            "Rebeldes": [{
+                "Nombre": "Luke",
+                "Edad": 56
+            }, {
+                "Nombre": "Han",
+                "Edad": 122
+            }, {
+                "Nombre": "Yoda",
+                "Edad": 0
+            }]
         }
 
         for sheetname in ["Imperio", "Rebeldes"]:
@@ -48,17 +51,13 @@ class HelpersTestCase(unittest.TestCase):
         """string_to_list convierte una str separada por "," en una
         lista"""
         strings = [
-            " pan , vino,gorriones ,23",
-            "economía,\t\tturismo,salud\n",
+            " pan , vino,gorriones ,23", "economía,\t\tturismo,salud\n",
             """uno,,
             dos,
             tres"""
         ]
-        lists = [
-            ["pan", "vino", "gorriones", "23"],
-            ["economía", "turismo", "salud"],
-            ["uno", "", "dos", "tres"]
-        ]
+        lists = [["pan", "vino", "gorriones", "23"],
+                 ["economía", "turismo", "salud"], ["uno", "", "dos", "tres"]]
         for (string, expected_list) in zip(strings, lists):
             actual_list = pydatajson.helpers.string_to_list(string)
             self.assertListEqual(actual_list, expected_list)
@@ -127,22 +126,31 @@ class HelpersTestCase(unittest.TestCase):
     def test_is_list_of_matching_dicts_with_matched_dicts(self):
         """is_list_of_matching_dicts devuelve True si todos los elementos del
         input tienen las mismas claves."""
-        result = pydatajson.helpers.is_list_of_matching_dicts([
-            {"a": 1, "b": 2},
-            {"a": 1, "b": 2},
-            {"a": 1, "b": 2}
-        ])
+        result = pydatajson.helpers.is_list_of_matching_dicts([{
+            "a": 1,
+            "b": 2
+        }, {
+            "a": 1,
+            "b": 2
+        }, {
+            "a": 1,
+            "b": 2
+        }])
 
         self.assertTrue(result)
 
     def test_is_list_of_matching_dicts_with_mismatched_dicts(self):
         """is_list_of_matching_dicts devuelve False si no todos los elementos
         del input tienen las mismas claves."""
-        result = pydatajson.helpers.is_list_of_matching_dicts([
-            {"a": 1, "b": 2},
-            {"a": 1},
-            {"a": 1, "b": 2}
-        ])
+        result = pydatajson.helpers.is_list_of_matching_dicts([{
+            "a": 1,
+            "b": 2
+        }, {
+            "a": 1
+        }, {
+            "a": 1,
+            "b": 2
+        }])
 
         self.assertFalse(result)
 
@@ -150,17 +158,14 @@ class HelpersTestCase(unittest.TestCase):
         # Testea función auxiliar para interpretar intervalos repetidos en días
         from pydatajson.helpers import parse_repeating_time_interval_to_days
 
-        self.assertEqual(
-            parse_repeating_time_interval_to_days("R/P6M"), 180
-        )
+        self.assertEqual(parse_repeating_time_interval_to_days("R/P6M"), 180)
 
     def test_parse_repeating_time_interval_to_str(self):
         # Testea función auxiliar para interpretar intervalos repetidos en días
         from pydatajson.helpers import parse_repeating_time_interval_to_str
 
         self.assertEqual(
-            parse_repeating_time_interval_to_str("R/P6M"), "Cada medio año"
-        )
+            parse_repeating_time_interval_to_str("R/P6M"), "Cada medio año")
 
     def test_add_dicts(self):
         # Testea la función auxiliar para sumar campos de dicts recursivamente
@@ -218,8 +223,7 @@ class HelpersTestCase(unittest.TestCase):
         self.assertEqual(
             pydatajson.helpers.title_to_name(
                 "Exportación en $   de tomates  año 2017 (*)"),
-            "exportacion-tomates-ano-2017"
-        )
+            "exportacion-tomates-ano-2017")
 
 
 if __name__ == '__main__':

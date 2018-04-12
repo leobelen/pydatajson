@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Módulo 'readers' de Pydatajson
 
 Contiene los métodos auxiliares para leer archivos con información tabular y
 catálogos de metadatos, en distintos fomatos.
 """
-
-from __future__ import unicode_literals, print_function, with_statement, absolute_import
 
 import io
 import json
@@ -49,7 +46,8 @@ def read_catalog(catalog, default_values=None):
     unknown_catalog_repr_msg = """
 No se pudo inferir una representación válida de un catálogo del parámetro
 provisto: {}.""".format(catalog)
-    assert isinstance(catalog, string_types + (dict,)), unknown_catalog_repr_msg
+    assert isinstance(catalog,
+                      string_types + (dict, )), unknown_catalog_repr_msg
 
     if isinstance(catalog, dict):
         catalog_dict = catalog
@@ -110,8 +108,8 @@ def apply_default_values(catalog, default_values):
         elif class_metadata == "distribution":
             for dataset in catalog["dataset"]:
                 for distribution in dataset["distribution"]:
-                    _set_default_value(
-                        distribution, field_json_path, default_value)
+                    _set_default_value(distribution, field_json_path,
+                                       default_value)
 
         # valores default de field
         elif class_metadata == "field":
@@ -121,8 +119,8 @@ def apply_default_values(catalog, default_values):
                     # campo "field" en una "distribution" no es obligatorio
                     if distribution.get("field"):
                         for field in distribution["field"]:
-                            _set_default_value(
-                                field, field_json_path, default_value)
+                            _set_default_value(field, field_json_path,
+                                               default_value)
 
 
 def _set_default_value(dict_obj, keys, value):
@@ -232,7 +230,8 @@ def _make_publisher(catalog_or_dataset):
     keys = [k for k in ["publisher_name", "publisher_mbox"] if k in level]
     if keys:
         level["publisher"] = {
-            key.replace("publisher_", ""): level.pop(key) for key in keys
+            key.replace("publisher_", ""): level.pop(key)
+            for key in keys
         }
     return level
 
@@ -240,11 +239,13 @@ def _make_publisher(catalog_or_dataset):
 def _make_contact_point(dataset):
     """De estar presentes las claves necesarias, genera el diccionario
     "contactPoint" de un dataset."""
-    keys = [k for k in ["contactPoint_fn", "contactPoint_hasEmail"]
-            if k in dataset]
+    keys = [
+        k for k in ["contactPoint_fn", "contactPoint_hasEmail"] if k in dataset
+    ]
     if keys:
         dataset["contactPoint"] = {
-            key.replace("contactPoint_", ""): dataset.pop(key) for key in keys
+            key.replace("contactPoint_", ""): dataset.pop(key)
+            for key in keys
         }
     return dataset
 
@@ -262,12 +263,9 @@ def _get_dataset_index(catalog, dataset_identifier, dataset_title,
                 matching_datasets.append(idx)
             else:
                 logger.warning(
-                    ce.DatasetUnexpectedTitle(
-                        dataset_identifier,
-                        dataset["dataset_title"],
-                        dataset_title
-                    )
-                )
+                    ce.DatasetUnexpectedTitle(dataset_identifier,
+                                              dataset["dataset_title"],
+                                              dataset_title))
 
     # Debe haber exactamente un dataset con el identificador provisto.
     no_dsets_msg = "No hay ningun dataset con el identifier {}".format(
@@ -284,15 +282,18 @@ def _get_dataset_index(catalog, dataset_identifier, dataset_title,
         return matching_datasets[0]
 
 
-def _get_distribution_indexes(catalog, dataset_identifier, dataset_title,
-                              distribution_identifier, distribution_title,
+def _get_distribution_indexes(catalog,
+                              dataset_identifier,
+                              dataset_title,
+                              distribution_identifier,
+                              distribution_title,
                               logger=None):
     """Devuelve el índice de una distribución en su dataset en función de su
     título, junto con el índice de su dataset padre en el catálogo, en
     función de su identificador"""
     logger = logger or global_logger
-    dataset_index = _get_dataset_index(
-        catalog, dataset_identifier, dataset_title)
+    dataset_index = _get_dataset_index(catalog, dataset_identifier,
+                                       dataset_title)
     if dataset_index is None:
         return None, None
     else:
@@ -309,23 +310,19 @@ def _get_distribution_indexes(catalog, dataset_identifier, dataset_title,
                     ce.DistributionUnexpectedTitle(
                         distribution_identifier,
                         distribution["distribution_title"],
-                        distribution_title
-                    )
-                )
+                        distribution_title))
 
     # Debe haber exactamente una distribución con los identicadores provistos
     if len(matching_distributions) == 0:
         logger.warning(
-            ce.DistributionTitleNonExistentError(
-                distribution_title, dataset_identifier
-            )
-        )
+            ce.DistributionTitleNonExistentError(distribution_title,
+                                                 dataset_identifier))
         return dataset_index, None
     elif len(matching_distributions) > 1:
         logger.warning(
-            ce.DistributionTitleRepetitionError(
-                distribution_title, dataset_identifier, matching_distributions)
-        )
+            ce.DistributionTitleRepetitionError(distribution_title,
+                                                dataset_identifier,
+                                                matching_distributions))
         return dataset_index, None
     else:
         distribution_index = matching_distributions[0]
@@ -368,10 +365,10 @@ El archivo a leer debe tener extensión XLSX."""
 
     # Me aseguro que los identificadores de dataset se guarden como cadenas
     for dataset in catalog["catalog_dataset"]:
-        dataset["dataset_identifier"] = text_type(dataset["dataset_identifier"])
+        dataset["dataset_identifier"] = text_type(
+            dataset["dataset_identifier"])
 
-    catalog["catalog_themeTaxonomy"] = (
-        helpers.sheet_to_table(ws_theme))
+    catalog["catalog_themeTaxonomy"] = (helpers.sheet_to_table(ws_theme))
 
     # Agrego lista de distribuciones vacía a cada dataset
     for dataset in catalog["catalog_dataset"]:
@@ -413,17 +410,18 @@ pudo asignar a un dataset, y no figurara en el data.json de salida.""".format(
 
         if dataset_index is None:
             print("""No se encontro el dataset '{}' especificado para el campo
-'{}' (fila #{} de la hoja "Field"). Este campo no figurara en el data.json de salida.""".format(
-                unidecode(field["dataset_title"]),
-                unidecode(field["field_title"]),
-                idx + 2))
+'{}' (fila #{} de la hoja "Field"). Este campo no figurara en el data.json de salida."""
+                  .format(
+                      unidecode(field["dataset_title"]),
+                      unidecode(field["field_title"]), idx + 2))
 
         elif distribution_index is None:
-            print("""No se encontro la distribucion '{}' especificada para el campo
-'{}' (fila #{} de la hoja "Field"). Este campo no figurara en el data.json de salida.""".format(
-                unidecode(field["distribution_title"]),
-                unidecode(field["field_title"]),
-                idx + 2))
+            print(
+                """No se encontro la distribucion '{}' especificada para el campo
+'{}' (fila #{} de la hoja "Field"). Este campo no figurara en el data.json de salida."""
+                .format(
+                    unidecode(field["distribution_title"]),
+                    unidecode(field["field_title"]), idx + 2))
 
         else:
             dataset = catalog["catalog_dataset"][dataset_index]
@@ -440,8 +438,10 @@ pudo asignar a un dataset, y no figurara en el data.json de salida.""".format(
             catalog["catalog_language"])
 
     for dataset in catalog["catalog_dataset"]:
-        array_fields = ["dataset_superTheme", "dataset_theme", "dataset_tags",
-                        "dataset_keyword", "dataset_language"]
+        array_fields = [
+            "dataset_superTheme", "dataset_theme", "dataset_tags",
+            "dataset_keyword", "dataset_language"
+        ]
         for field in array_fields:
             if field in dataset:
                 dataset[field] = helpers.string_to_list(dataset[field])
@@ -456,7 +456,7 @@ pudo asignar a un dataset, y no figurara en el data.json de salida.""".format(
 
     # Elimino los prefijos de los campos a nivel tema
     for theme in catalog["themeTaxonomy"]:
-        for old_key in theme.keys():
+        for old_key in list(theme.keys()):
             if old_key.startswith("theme_"):
                 new_key = old_key.replace("theme_", "")
                 theme[new_key] = theme.pop(old_key)
@@ -521,7 +521,7 @@ def read_table(path):
         list: Lista de diccionarios con claves idénticas representando el
         archivo original.
     """
-    assert isinstance(path, string_types + (list,)), """
+    assert isinstance(path, string_types + (list, )), """
 {} no es un `path` valido""".format(path)
 
     # Si `path` es una lista, devolverla intacta si tiene formato tabular.

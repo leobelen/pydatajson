@@ -53,8 +53,9 @@ import pydatajson
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc',
-              'sphinx.ext.viewcode', 'sphinxcontrib.napoleon']
+extensions = [
+    'sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinxcontrib.napoleon'
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -73,8 +74,8 @@ source_suffix = ['.rst', '.md']
 master_doc = 'index'
 
 # General information about the project.
-project = u'pydatajson'
-copyright = u"2016, Datos Argentina"
+project = 'pydatajson'
+copyright = "2016, Datos Argentina"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -123,7 +124,6 @@ pygments_style = 'sphinx'
 # If true, keep warnings as "system message" paragraphs in the built
 # documents.
 #keep_warnings = False
-
 
 # -- Options for HTML output -------------------------------------------
 
@@ -208,7 +208,6 @@ html_static_path = ['_static']
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'pydatajsondoc'
 
-
 # -- Options for LaTeX output ------------------------------------------
 
 latex_elements = {
@@ -226,9 +225,8 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass
 # [howto/manual]).
 latex_documents = [
-    ('index', 'pydatajson.tex',
-     u'pydatajson Documentation',
-     u'Datos Argentina', 'manual'),
+    ('index', 'pydatajson.tex', 'pydatajson Documentation', 'Datos Argentina',
+     'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at
@@ -251,20 +249,15 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_domain_indices = True
 
-
 # -- Options for manual page output ------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    ('index', 'pydatajson',
-     u'pydatajson Documentation',
-     [u'Datos Argentina'], 1)
-]
+man_pages = [('index', 'pydatajson', 'pydatajson Documentation',
+              ['Datos Argentina'], 1)]
 
 # If true, show URL addresses after external links.
 #man_show_urls = False
-
 
 # -- Options for Texinfo output ----------------------------------------
 
@@ -272,12 +265,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'pydatajson',
-     u'pydatajson Documentation',
-     u'Datos Argentina',
-     'pydatajson',
-     'One line description of project.',
-     'Miscellaneous'),
+    ('index', 'pydatajson', 'pydatajson Documentation', 'Datos Argentina',
+     'pydatajson', 'One line description of project.', 'Miscellaneous'),
 ]
 
 # Documents to append as an appendix to all manuals.

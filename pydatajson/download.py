@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
-
 """Módulo 'download' de pydatajson
 
 Contiene métodos para descargar archivos a través del protocolo HTTP.
 """
-
-from __future__ import unicode_literals, print_function, with_statement
-from __future__ import absolute_import
 
 import requests
 import time
@@ -15,8 +11,12 @@ DEFAULT_TRIES = 1
 RETRY_DELAY = 1
 
 
-def download(url, tries=DEFAULT_TRIES, retry_delay=RETRY_DELAY,
-             try_timeout=None, proxies=None, verify=True):
+def download(url,
+             tries=DEFAULT_TRIES,
+             retry_delay=RETRY_DELAY,
+             try_timeout=None,
+             proxies=None,
+             verify=True):
     """
     Descarga un archivo a través del protocolo HTTP, en uno o más intentos.
 
@@ -35,8 +35,9 @@ def download(url, tries=DEFAULT_TRIES, retry_delay=RETRY_DELAY,
     """
     for i in range(tries):
         try:
-            return requests.get(url, timeout=try_timeout, proxies=proxies,
-                                verify=verify).content
+            return requests.get(
+                url, timeout=try_timeout, proxies=proxies,
+                verify=verify).content
         except Exception as e:
             download_exception = e
 

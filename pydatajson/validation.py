@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Módulo 'validator' de Pydatajson
 
 Contiene los métodos para validar el perfil de metadatos de un catálogo.
 """
-
-from __future__ import unicode_literals, print_function, with_statement, absolute_import
 
 import os
 import platform
@@ -14,7 +11,7 @@ import mimetypes
 from collections import Counter
 
 try:
-    from urlparse import urlparse
+    from urllib.parse import urlparse
 except ImportError:
     from urllib.parse import urlparse
 
@@ -100,8 +97,11 @@ def is_valid_catalog(catalog, validator=None):
     return jsonschema_res and len(list(custom_errors)) == 0
 
 
-def validate_catalog(catalog, only_errors=False, fmt="dict",
-                     export_path=None, validator=None):
+def validate_catalog(catalog,
+                     only_errors=False,
+                     fmt="dict",
+                     export_path=None,
+                     validator=None):
     """Analiza un data.json registrando los errores que encuentra.
 
     Chequea que el data.json tiene todos los campos obligatorios y que
@@ -164,16 +164,15 @@ def validate_catalog(catalog, only_errors=False, fmt="dict",
             # "dataset" contiene lista de rtas default si el catálogo
             # contiene la clave "dataset" y además su valor es una lista.
             # En caso contrario "dataset" es None.
-            "dataset": [
-                {
-                    "status": "OK",
-                    "title": dataset.get("title"),
-                    "identifier": dataset.get("identifier"),
-                    "list_index": index,
-                    "errors": []
-                } for index, dataset in enumerate(catalog["dataset"])
-            ] if ("dataset" in catalog and
-                  isinstance(catalog["dataset"], list)) else None
+            "dataset": [{
+                "status": "OK",
+                "title": dataset.get("title"),
+                "identifier": dataset.get("identifier"),
+                "list_index": index,
+                "errors": []
+            } for index, dataset in enumerate(catalog["dataset"])]
+            if ("dataset" in catalog and isinstance(catalog["dataset"], list))
+            else None
         }
     }
 
@@ -190,15 +189,14 @@ def validate_catalog(catalog, only_errors=False, fmt="dict",
 
     response = default_response.copy()
     for error in errors:
-        response = _update_validation_response(
-            error, response)
+        response = _update_validation_response(error, response)
 
     # filtra los resultados que están ok, para hacerlo más compacto
     if only_errors:
-        response["error"]["dataset"] = filter(
-            lambda dataset: dataset["status"] == "ERROR",
-            response["error"]["dataset"]
-        )
+        response["error"]["dataset"] = [
+            dataset for dataset in response["error"]["dataset"]
+            if dataset["status"] == "ERROR"
+        ]
 
     # elige el formato del resultado
     if export_path:
@@ -206,42 +204,70 @@ def validate_catalog(catalog, only_errors=False, fmt="dict",
 
         # config styles para reportes en excel
         alignment = Alignment(
-            wrap_text=True,
-            shrink_to_fit=True,
-            vertical="center"
-        )
+            wrap_text=True, shrink_to_fit=True, vertical="center")
         column_styles = {
             "catalog": {
-                "catalog_status": {"width": 20},
-                "catalog_error_location": {"width": 40},
-                "catalog_error_message": {"width": 40},
-                "catalog_title": {"width": 20},
+                "catalog_status": {
+                    "width": 20
+                },
+                "catalog_error_location": {
+                    "width": 40
+                },
+                "catalog_error_message": {
+                    "width": 40
+                },
+                "catalog_title": {
+                    "width": 20
+                },
             },
             "dataset": {
-                "dataset_error_location": {"width": 20},
-                "dataset_identifier": {"width": 40},
-                "dataset_status": {"width": 20},
-                "dataset_title": {"width": 40},
-                "dataset_list_index": {"width": 20},
-                "dataset_error_message": {"width": 40},
+                "dataset_error_location": {
+                    "width": 20
+                },
+                "dataset_identifier": {
+                    "width": 40
+                },
+                "dataset_status": {
+                    "width": 20
+                },
+                "dataset_title": {
+                    "width": 40
+                },
+                "dataset_list_index": {
+                    "width": 20
+                },
+                "dataset_error_message": {
+                    "width": 40
+                },
             }
         }
         cell_styles = {
             "catalog": [
-                {"alignment": Alignment(vertical="center")},
-                {"row": 1, "font": Font(bold=True)},
+                {
+                    "alignment": Alignment(vertical="center")
+                },
+                {
+                    "row": 1,
+                    "font": Font(bold=True)
+                },
             ],
             "dataset": [
-                {"alignment": Alignment(vertical="center")},
-                {"row": 1, "font": Font(bold=True)},
+                {
+                    "alignment": Alignment(vertical="center")
+                },
+                {
+                    "row": 1,
+                    "font": Font(bold=True)
+                },
             ]
         }
 
         # crea tablas en un sólo excel o varios CSVs
         writers.write_tables(
-            tables=validation_lists, path=export_path,
-            column_styles=column_styles, cell_styles=cell_styles
-        )
+            tables=validation_lists,
+            path=export_path,
+            column_styles=column_styles,
+            cell_styles=cell_styles)
 
     elif fmt == "dict":
         return response
@@ -277,16 +303,21 @@ def iter_custom_errors(catalog):
                 yield ce.ThemeIdRepeated(dups)
         # chequea que la extensión de fileName, downloadURL y format sean consistentes
         for dataset_idx, dataset in enumerate(catalog["dataset"]):
-            for distribution_idx, distribution in enumerate(dataset["distribution"]):
+            for distribution_idx, distribution in enumerate(
+                    dataset["distribution"]):
                 for attribute in ['downloadURL', 'fileName']:
                     if not format_matches_extension(distribution, attribute):
-                        yield ce.ExtensionError(dataset_idx, distribution_idx, distribution, attribute)
+                        yield ce.ExtensionError(dataset_idx, distribution_idx,
+                                                distribution, attribute)
 
         # chequea que no haya duplicados en los downloadURL de las distribuciones
         urls = []
         for dataset in catalog["dataset"]:
-            urls += [distribution['downloadURL'] for distribution in dataset['distribution']
-                     if distribution.get('downloadURL')]
+            urls += [
+                distribution['downloadURL']
+                for distribution in dataset['distribution']
+                if distribution.get('downloadURL')
+            ]
         dups = _find_dups(urls)
         if len(dups) > 0:
             yield ce.DownloadURLRepetitionError(dups)
@@ -296,8 +327,9 @@ def iter_custom_errors(catalog):
 
 
 def _find_dups(elements):
-    return [item for item, count in Counter(elements).items()
-            if count > 1]
+    return [
+        item for item, count in list(Counter(elements).items()) if count > 1
+    ]
 
 
 def _update_validation_response(error, response):
@@ -349,10 +381,8 @@ def _catalog_validation_to_list(response):
         "catalog_status": response["error"]["catalog"]["status"]
     }
     for error in response["error"]["catalog"]["errors"]:
-        validation_result[
-            "catalog_error_message"] = error["message"]
-        validation_result[
-            "catalog_error_location"] = ", ".join(error["path"])
+        validation_result["catalog_error_message"] = error["message"]
+        validation_result["catalog_error_location"] = ", ".join(error["path"])
         rows_catalog.append(validation_result)
 
     if len(response["error"]["catalog"]["errors"]) == 0:
@@ -370,10 +400,8 @@ def _catalog_validation_to_list(response):
             "dataset_status": dataset["status"]
         }
         for error in dataset["errors"]:
-            validation_result[
-                "dataset_error_message"] = error["message"]
-            validation_result[
-                "dataset_error_location"] = error["path"][-1]
+            validation_result["dataset_error_message"] = error["message"]
+            validation_result["dataset_error_location"] = error["path"][-1]
             rows_dataset.append(validation_result)
 
         if len(dataset["errors"]) == 0:
@@ -387,7 +415,8 @@ def _catalog_validation_to_list(response):
 def format_matches_extension(distribution, attribute):
     if attribute in distribution and "format" in distribution:
         if "/" in distribution['format']:
-            possible_format_extensions = mimetypes.guess_all_extensions(distribution['format'])
+            possible_format_extensions = mimetypes.guess_all_extensions(
+                distribution['format'])
         else:
             possible_format_extensions = ['.' + distribution['format'].lower()]
 

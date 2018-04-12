@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Extensión de pydatajson para leer catálogos de metadatos a través de la API
 de CKAN v3.
 """
-from __future__ import unicode_literals, print_function, with_statement, absolute_import
+
 import os.path
 import logging
 import json
@@ -17,20 +16,24 @@ from .helpers import clean_str, title_to_name
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
 ABSOLUTE_PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(ABSOLUTE_PROJECT_DIR, "schemas",
-                       "accrualPeriodicity.json")) as frequencies:
+with open(
+        os.path.join(ABSOLUTE_PROJECT_DIR, "schemas",
+                     "accrualPeriodicity.json"),
+        encoding="utf-8") as frequencies:
     RAW_FREQUENCIES = json.load(frequencies)
     FREQUENCIES = {row["description"]: row["id"] for row in RAW_FREQUENCIES}
 
-with open(os.path.join(ABSOLUTE_PROJECT_DIR, "schemas",
-                       "superThemeTaxonomy.json")) as super_themes:
+with open(
+        os.path.join(ABSOLUTE_PROJECT_DIR, "schemas",
+                     "superThemeTaxonomy.json"),
+        encoding="utf-8") as super_themes:
     RAW_SUPER_THEMES = json.load(super_themes)
     SUPER_THEMES = {row["label"]: row["id"] for row in RAW_SUPER_THEMES}
 
-logging.basicConfig(format='%(asctime)s [%(levelname)s]: %(message)s',
-                    datefmt='%m/%d/%Y %I:%M:%S')
+logging.basicConfig(
+    format='%(asctime)s [%(levelname)s]: %(message)s',
+    datefmt='%m/%d/%Y %I:%M:%S')
 
 
 def read_ckan_catalog(portal_url):
@@ -64,20 +67,20 @@ def read_ckan_catalog(portal_url):
             print(msg, end="\r")
 
             # agrega un nuevo dataset a la lista
-            packages.append(portal.call_action(
-                'package_show', {'name_or_id': pkg},
-                requests_kwargs={"verify": False}
-            ))
+            packages.append(
+                portal.call_action(
+                    'package_show', {'name_or_id': pkg},
+                    requests_kwargs={"verify": False}))
 
         # itera leyendo todos los temas del portal
-        groups = [portal.call_action(
-            'group_show', {'id': grp},
-            requests_kwargs={"verify": False})
-            for grp in groups_list]
+        groups = [
+            portal.call_action(
+                'group_show', {'id': grp}, requests_kwargs={"verify": False})
+            for grp in groups_list
+        ]
 
         catalog = map_status_to_catalog(status)
-        catalog["dataset"] = map_packages_to_datasets(
-            packages, portal_url)
+        catalog["dataset"] = map_packages_to_datasets(packages, portal_url)
         catalog["themeTaxonomy"] = map_groups_to_themes(groups)
 
     except:
@@ -105,12 +108,9 @@ def map_status_to_catalog(status):
 La clave '%s' no está en el endpoint de status. No se puede completar
 catalog['%s'].""", status_key, catalog_key)
 
-    publisher_mapping = {
-        "site_title": "name",
-        "error_emails_to": "mbox"
-    }
+    publisher_mapping = {"site_title": "name", "error_emails_to": "mbox"}
 
-    if any([k in status for k in publisher_mapping.keys()]):
+    if any([k in status for k in list(publisher_mapping.keys())]):
         catalog["publisher"] = dict()
         for status_key, publisher_key in iteritems(publisher_mapping):
             try:
@@ -132,8 +132,7 @@ de 'status'.""")
 
 def map_packages_to_datasets(packages, portal_url):
     """Mapea una lista de 'packages' de CKAN a 'datasets' de data.json."""
-    return [map_package_to_dataset(pkg, portal_url)
-            for pkg in packages]
+    return [map_package_to_dataset(pkg, portal_url) for pkg in packages]
 
 
 def map_package_to_dataset(package, portal_url):
@@ -160,15 +159,12 @@ def map_package_to_dataset(package, portal_url):
         except:
             logging.info("""
 La clave '%s' no está en el endpoint 'package_show' para el package '%s'. No
-se puede completar dataset['%s'].""",
-                         package_key, package['name'], dataset_key)
+se puede completar dataset['%s'].""", package_key, package['name'],
+                         dataset_key)
 
-    publisher_mapping = {
-        'author': 'name',
-        'author_email': 'mbox'
-    }
+    publisher_mapping = {'author': 'name', 'author_email': 'mbox'}
 
-    if any([k in package for k in publisher_mapping.keys()]):
+    if any([k in package for k in list(publisher_mapping.keys())]):
         dataset["publisher"] = dict()
         for package_key, publisher_key in iteritems(publisher_mapping):
             try:
@@ -176,15 +172,15 @@ se puede completar dataset['%s'].""",
             except:
                 logging.info("""
 La clave '%s' no está en el endpoint 'package_show' para el package '%s'. No
-se puede completar dataset['publisher']['%s'].""",
-                             package_key, package['name'], publisher_key)
+se puede completar dataset['publisher']['%s'].""", package_key,
+                             package['name'], publisher_key)
 
     contact_point_mapping = {
         'maintainer': 'fn',
         'maintainer_email': 'hasEmail'
     }
 
-    if any([k in package for k in contact_point_mapping.keys()]):
+    if any([k in package for k in list(contact_point_mapping.keys())]):
         dataset["contactPoint"] = dict()
         for package_key, contact_key in iteritems(contact_point_mapping):
             try:
@@ -192,8 +188,8 @@ se puede completar dataset['publisher']['%s'].""",
             except:
                 logging.info("""
 La clave '%s' no está en el endpoint 'package_show' para el package '%s'. No
-se puede completar dataset['contactPoint']['%s'].""",
-                             package_key, package['name'], contact_key)
+se puede completar dataset['contactPoint']['%s'].""", package_key,
+                             package['name'], contact_key)
 
     # Si existen campos extras en la información del package, busco las claves
     # "Frecuencia de actualización" y "Temática global" para completar los
@@ -203,8 +199,8 @@ se puede completar dataset['contactPoint']['%s'].""",
         add_superTheme(dataset, package)
         add_temporal(dataset, package)
 
-    dataset["distribution"] = map_resources_to_distributions(resources,
-                                                             portal_url)
+    dataset["distribution"] = map_resources_to_distributions(
+        resources, portal_url)
     dataset["theme"] = [grp['name'] for grp in groups]
     dataset['keyword'] = [tag['name'] for tag in tags]
 
@@ -214,8 +210,8 @@ se puede completar dataset['contactPoint']['%s'].""",
 def add_temporal(dataset, package):
     # "Cobertura temporal" => "temporal"
     temporal = [
-        extra["value"] for extra in package["extras"] if
-        title_to_name(extra["key"]) == title_to_name("Cobertura temporal")
+        extra["value"] for extra in package["extras"]
+        if title_to_name(extra["key"]) == title_to_name("Cobertura temporal")
     ]
 
     if len(temporal) > 1:
@@ -234,9 +230,10 @@ Se encontró '%s' como cobertura temporal, pero no es mapeable a un
     # Busco claves que son casi "Cobertura temporal" para lanzar
     # advertencias si las hay.
     almost_temporal = [
-        extra for extra in package["extras"] if
-        clean_str(extra["key"]) == "cobertura temporal" and
-        extra["key"] != "Cobertura temporal"]
+        extra for extra in package["extras"]
+        if clean_str(extra["key"]) == "cobertura temporal"
+        and extra["key"] != "Cobertura temporal"
+    ]
 
     if almost_temporal:
         logging.warn("""
@@ -249,8 +246,8 @@ corregirlas:
 def add_superTheme(dataset, package):
     # "Temática global" => "superTheme"
     super_theme = [
-        extra["value"] for extra in package["extras"] if
-        title_to_name(extra["key"]) == title_to_name("Temática global")
+        extra["value"] for extra in package["extras"]
+        if title_to_name(extra["key"]) == title_to_name("Temática global")
     ]
 
     if len(super_theme) == 0:
@@ -274,9 +271,10 @@ Se encontró '%s' como temática global, pero no es mapeable a un
     # Busco claves que son casi "Temática global" para lanzar
     # advertencias si las hay.
     almost_super_theme = [
-        extra for extra in package["extras"] if
-        clean_str(extra["key"]) == "tematica global" and
-        extra["key"] != "Temática global"]
+        extra for extra in package["extras"]
+        if clean_str(extra["key"]) == "tematica global"
+        and extra["key"] != "Temática global"
+    ]
 
     if almost_super_theme:
         logging.warn("""
@@ -288,9 +286,8 @@ global" en 'extras' para el 'package' '%s'. Por favor, considere corregirlas:
 def add_accrualPeriodicity(dataset, package):
     # "Frecuencia de actualización" => "accrualPeriodicity"
     accrual = [
-        extra["value"] for extra in package["extras"] if
-        title_to_name(extra["key"]) == title_to_name(
-            "Frecuencia de actualización")
+        extra["value"] for extra in package["extras"] if title_to_name(
+            extra["key"]) == title_to_name("Frecuencia de actualización")
     ]
 
     if len(accrual) == 0:
@@ -314,9 +311,10 @@ Se encontró '%s' como frecuencia de actualización, pero no es mapeable a una
     # Busco claves que son casi "Frecuencia de actualización" para lanzar
     # advertencias si las hay.
     almost_accrual = [
-        extra for extra in package["extras"] if
-        clean_str(extra["key"]) == "frecuencia de actualizacion" and
-        extra["key"] != "Frecuencia de actualización"]
+        extra for extra in package["extras"]
+        if clean_str(extra["key"]) == "frecuencia de actualizacion"
+        and extra["key"] != "Frecuencia de actualización"
+    ]
 
     if almost_accrual:
         logging.warn("""
@@ -353,8 +351,8 @@ def map_resource_to_distribution(resource, portal_url):
         except:
             logging.info("""
 La clave '%s' no está en la metadata del 'resource' '%s'. No
-se puede completar distribution['%s'].""",
-                         resource_key, resource['name'], distribution_key)
+se puede completar distribution['%s'].""", resource_key, resource['name'],
+                         distribution_key)
 
     url_path = ['dataset', resource['package_id'], 'resource', resource['id']]
     distribution["accessURL"] = urljoin(portal_url, "/".join(url_path))
@@ -384,7 +382,6 @@ def map_group_to_theme(group):
         except:
             logging.info("""
 La clave '%s' no está en la metadata del 'group' '%s'. No
-se puede completar theme['%s'].""",
-                         group_key, theme['name'], theme_key)
+se puede completar theme['%s'].""", group_key, theme['name'], theme_key)
 
     return theme

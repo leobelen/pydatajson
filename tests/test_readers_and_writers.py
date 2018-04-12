@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Tests del modulo pydatajson."""
-
-from __future__ import print_function, unicode_literals, with_statement
 
 import os.path
 import unittest
@@ -23,9 +20,10 @@ from pydatajson.helpers import ensure_dir_exists
 from . import xl_methods
 import openpyxl as pyxl
 
-my_vcr = vcr.VCR(path_transformer=vcr.VCR.ensure_suffix('.yaml'),
-                 cassette_library_dir=os.path.join("tests", "cassetes"),
-                 record_mode='once')
+my_vcr = vcr.VCR(
+    path_transformer=vcr.VCR.ensure_suffix('.yaml'),
+    cassette_library_dir=os.path.join("tests", "cassetes"),
+    record_mode='once')
 
 
 class ReadersAndWritersTestCase(unittest.TestCase):
@@ -108,8 +106,9 @@ revíselo manualmente""".format(actual_filename)
     def test_write_table_to_invalid_format(self):
         """Si se quiere escribir un formato desconocido (no XLSX ni CSV),
         write_table levanta un Assertion Error."""
-        pydatajson.writers.write_table(
-            CSV_TABLE, os.path.join(self.SAMPLES_DIR, "full_data.json"))
+        pydatajson.writers.write_table(CSV_TABLE,
+                                       os.path.join(self.SAMPLES_DIR,
+                                                    "full_data.json"))
 
     def test_write_read_csv_loop(self):
         """Escribir y leer un CSV es una operacion idempotente."""
@@ -137,7 +136,7 @@ revíselo manualmente""".format(temp_filename)
         # de valor None en la tabla original, al leerla y escribirla dicha
         # clave no estará presente. Por eso se usa d.get(k) en lugar de d[k].
         for (actual_row, expected_row) in zip(read_table, WRITE_XLSX_TABLE):
-            for key in expected_row.keys():
+            for key in list(expected_row.keys()):
                 self.assertEqual(actual_row.get(key), expected_row.get(key))
 
         os.remove(temp_filename)
@@ -184,8 +183,7 @@ revíselo manualmente""".format(temp_filename)
                 "distribution_issued": "2017-06-22",
                 "catalog_publisher_mbox": "a@b.com",
                 "field_description": "Una descripcion default"
-            }
-        )
+            })
 
         self.assertDictEqual(actual_catalog, expected_catalog)
 
@@ -194,7 +192,8 @@ revíselo manualmente""".format(temp_filename)
         """read_catalog puede leer XLSX remotos."""
         catalog_url = "".join([
             "https://github.com/datosgobar/pydatajson/raw/master/",
-            "tests/samples/catalogo_justicia.xlsx"])
+            "tests/samples/catalogo_justicia.xlsx"
+        ])
 
         expected_catalog = pydatajson.readers.read_catalog(
             os.path.join(self.SAMPLES_DIR, "catalogo_justicia.json"))

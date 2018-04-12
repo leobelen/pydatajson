@@ -2,15 +2,21 @@
 # -*- coding: utf-8 -*-
 """Extensión de pydatajson para la federación de metadatos de datasets a través de la API de CKAN.
 """
-from __future__ import print_function
+
 from ckanapi import RemoteCKAN
 from ckanapi.errors import NotFound
 from .ckan_utils import map_dataset_to_package, map_theme_to_group
 from .search import get_datasets
 
 
-def push_dataset_to_ckan(catalog, owner_org, dataset_origin_identifier, portal_url, apikey,
-                         catalog_id=None, demote_superThemes=True, demote_themes=True):
+def push_dataset_to_ckan(catalog,
+                         owner_org,
+                         dataset_origin_identifier,
+                         portal_url,
+                         apikey,
+                         catalog_id=None,
+                         demote_superThemes=True,
+                         demote_themes=True):
     """Escribe la metadata de un dataset en el portal pasado por parámetro.
 
         Args:
@@ -36,9 +42,9 @@ def push_dataset_to_ckan(catalog, owner_org, dataset_origin_identifier, portal_u
     if dataset.get('license'):
         license_list = ckan_portal.call_action('license_list')
         try:
-            ckan_license = next(license_item for license_item in license_list if
-                                license_item['title'] == dataset['license'] or
-                                license_item['url'] == dataset['license'])
+            ckan_license = next(license_item for license_item in license_list
+                                if license_item['title'] == dataset['license']
+                                or license_item['url'] == dataset['license'])
             package['license_id'] = ckan_license['id']
         except StopIteration:
             package['license_id'] = 'notspecified'
@@ -61,8 +67,12 @@ def remove_dataset_from_ckan(identifier, portal_url, apikey):
     ckan_portal.call_action('dataset_purge', data_dict={'id': identifier})
 
 
-def remove_datasets_from_ckan(portal_url, apikey, filter_in=None, filter_out=None,
-                              only_time_series=False, organization=None):
+def remove_datasets_from_ckan(portal_url,
+                              apikey,
+                              filter_in=None,
+                              filter_out=None,
+                              only_time_series=False,
+                              organization=None):
     """Borra un dataset en el portal pasado por parámetro.
 
             Args:
@@ -79,20 +89,35 @@ def remove_datasets_from_ckan(portal_url, apikey, filter_in=None, filter_out=Non
     identifiers = []
     datajson_filters = filter_in or filter_out or only_time_series
     if datajson_filters:
-        identifiers += get_datasets(portal_url + '/data.json', filter_in=filter_in, filter_out=filter_out,
-                                    only_time_series=only_time_series, meta_field='identifier')
+        identifiers += get_datasets(
+            portal_url + '/data.json',
+            filter_in=filter_in,
+            filter_out=filter_out,
+            only_time_series=only_time_series,
+            meta_field='identifier')
     if organization:
         query = 'organization:"' + organization + '"'
-        search_result = ckan_portal.call_action('package_search', data_dict={
-                                                'q': query, 'rows': 500, 'start': 0})
-        org_identifiers = [dataset['id']
-                           for dataset in search_result['results']]
+        search_result = ckan_portal.call_action(
+            'package_search', data_dict={
+                'q': query,
+                'rows': 500,
+                'start': 0
+            })
+        org_identifiers = [
+            dataset['id'] for dataset in search_result['results']
+        ]
         start = 500
         while search_result['count'] > start:
-            search_result = ckan_portal.call_action('package_search',
-                                                    data_dict={'q': query, 'rows': 500, 'start': start})
-            org_identifiers += [dataset['id']
-                                for dataset in search_result['results']]
+            search_result = ckan_portal.call_action(
+                'package_search',
+                data_dict={
+                    'q': query,
+                    'rows': 500,
+                    'start': start
+                })
+            org_identifiers += [
+                dataset['id'] for dataset in search_result['results']
+            ]
             start += 500
 
         if datajson_filters:
@@ -104,7 +129,11 @@ def remove_datasets_from_ckan(portal_url, apikey, filter_in=None, filter_out=Non
         ckan_portal.call_action('dataset_purge', data_dict={'id': identifier})
 
 
-def push_theme_to_ckan(catalog, portal_url, apikey, identifier=None, label=None):
+def push_theme_to_ckan(catalog,
+                       portal_url,
+                       apikey,
+                       identifier=None,
+                       label=None):
     """Escribe la metadata de un theme en el portal pasado por parámetro.
 
             Args:
@@ -123,7 +152,8 @@ def push_theme_to_ckan(catalog, portal_url, apikey, identifier=None, label=None)
     return pushed_group['name']
 
 
-def restore_dataset_to_ckan(catalog, owner_org, dataset_origin_identifier, portal_url, apikey):
+def restore_dataset_to_ckan(catalog, owner_org, dataset_origin_identifier,
+                            portal_url, apikey):
     """Restaura la metadata de un dataset en el portal pasado por parámetro.
 
         Args:
@@ -139,7 +169,8 @@ def restore_dataset_to_ckan(catalog, owner_org, dataset_origin_identifier, porta
                                 portal_url, apikey, None, False, False)
 
 
-def harvest_dataset_to_ckan(catalog, owner_org, dataset_origin_identifier, portal_url, apikey, catalog_id):
+def harvest_dataset_to_ckan(catalog, owner_org, dataset_origin_identifier,
+                            portal_url, apikey, catalog_id):
     """Federa la metadata de un dataset en el portal pasado por parámetro.
 
         Args:
@@ -153,11 +184,20 @@ def harvest_dataset_to_ckan(catalog, owner_org, dataset_origin_identifier, porta
             str: El id del dataset restaurado.
     """
 
-    return push_dataset_to_ckan(catalog, owner_org, dataset_origin_identifier,
-                                portal_url, apikey, catalog_id=catalog_id)
+    return push_dataset_to_ckan(
+        catalog,
+        owner_org,
+        dataset_origin_identifier,
+        portal_url,
+        apikey,
+        catalog_id=catalog_id)
 
 
-def restore_catalog_to_ckan(catalog, owner_org, portal_url, apikey, dataset_list=None):
+def restore_catalog_to_ckan(catalog,
+                            owner_org,
+                            portal_url,
+                            apikey,
+                            dataset_list=None):
     """Restaura los datasets de un catálogo al portal pasado por parámetro. Si hay temas presentes en el DataJson que
        no están en el portal de CKAN, los genera.
 
@@ -172,15 +212,23 @@ def restore_catalog_to_ckan(catalog, owner_org, portal_url, apikey, dataset_list
             str: El id del dataset en el catálogo de destino.
     """
     push_new_themes(catalog, portal_url, apikey)
-    dataset_list = dataset_list or [ds['identifier'] for ds in catalog.datasets]
+    dataset_list = dataset_list or [
+        ds['identifier'] for ds in catalog.datasets
+    ]
     restored = []
     for dataset_id in dataset_list:
-        restored_id = restore_dataset_to_ckan(catalog, owner_org, dataset_id, portal_url, apikey)
+        restored_id = restore_dataset_to_ckan(catalog, owner_org, dataset_id,
+                                              portal_url, apikey)
         restored.append(restored_id)
     return restored
 
 
-def harvest_catalog_to_ckan(catalog, portal_url, apikey, catalog_id, dataset_list=None, owner_org=None):
+def harvest_catalog_to_ckan(catalog,
+                            portal_url,
+                            apikey,
+                            catalog_id,
+                            dataset_list=None,
+                            owner_org=None):
     """Federa los datasets de un catálogo al portal pasado por parámetro.
 
         Args:
@@ -194,11 +242,14 @@ def harvest_catalog_to_ckan(catalog, portal_url, apikey, catalog_id, dataset_lis
         Returns:
             str: El id del dataset en el catálogo de destino.
     """
-    dataset_list = dataset_list or [ds['identifier'] for ds in catalog.datasets]
+    dataset_list = dataset_list or [
+        ds['identifier'] for ds in catalog.datasets
+    ]
     owner_org = owner_org or catalog_id
     harvested = []
     for dataset_id in dataset_list:
-        harvested_id = harvest_dataset_to_ckan(catalog, owner_org, dataset_id, portal_url, apikey, catalog_id)
+        harvested_id = harvest_dataset_to_ckan(catalog, owner_org, dataset_id,
+                                               portal_url, apikey, catalog_id)
         harvested.append(harvested_id)
     return harvested
 
@@ -215,9 +266,13 @@ def push_new_themes(catalog, portal_url, apikey):
     """
     ckan_portal = RemoteCKAN(portal_url, apikey=apikey)
     existing_themes = ckan_portal.call_action('group_list')
-    new_themes = [theme['id'] for theme in catalog['themeTaxonomy'] if theme['id'] not in existing_themes]
+    new_themes = [
+        theme['id'] for theme in catalog['themeTaxonomy']
+        if theme['id'] not in existing_themes
+    ]
     pushed_names = []
     for new_theme in new_themes:
-        name = push_theme_to_ckan(catalog, portal_url, apikey, identifier=new_theme)
+        name = push_theme_to_ckan(
+            catalog, portal_url, apikey, identifier=new_theme)
         pushed_names.append(name)
     return pushed_names

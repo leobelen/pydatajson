@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from __future__ import unicode_literals, absolute_import
+
 
 from .catalog_errors import missing_catalog_title, \
     missing_catalog_description, \
@@ -24,22 +24,23 @@ FULL_DATA_RESPONSE = {
             "errors": [],
             "title": "Datos Argentina"
         },
-        "dataset": [
-            {
-                "status": "OK",
-                "identifier": "99db6631-d1c9-470b-a73e-c62daa32c777",
-                "list_index": 0,
-                "errors": [],
-                "title": "Sistema de contrataciones electrónicas"
-            },
-            {
-                "status": "OK",
-                "identifier": "99db6631-d1c9-470b-a73e-c62daa32c420",
-                "list_index": 1,
-                "errors": [],
-                "title": "Sistema de contrataciones electrónicas (sin datos)"
-            }
-        ]
+        "dataset": [{
+            "status": "OK",
+            "identifier": "99db6631-d1c9-470b-a73e-c62daa32c777",
+            "list_index": 0,
+            "errors": [],
+            "title": "Sistema de contrataciones electrónicas"
+        }, {
+            "status":
+            "OK",
+            "identifier":
+            "99db6631-d1c9-470b-a73e-c62daa32c420",
+            "list_index":
+            1,
+            "errors": [],
+            "title":
+            "Sistema de contrataciones electrónicas (sin datos)"
+        }]
     }
 }
 
@@ -68,10 +69,8 @@ TEST_FROM_RESULT_FILE = {
 }
 
 TEST_FROM_GENERATED_RESULT = {
-
     'multiple_missing_descriptions': multiple_missing_descriptions(),
     'invalid_multiple_fields_type': invalid_multiple_fields_type(),
-
     'missing_catalog_title': missing_catalog_title(),
     'missing_catalog_description': missing_catalog_description(),
     'missing_catalog_dataset': missing_catalog_dataset(),
@@ -83,7 +82,6 @@ TEST_FROM_GENERATED_RESULT = {
     'malformed_uri': malformed_uri(),
     'invalid_themeTaxonomy': invalid_theme_taxonomy(),
     'missing_dataset': missing_dataset(),
-
     'missing_dataset_title': missing_dataset_title(),
     'missing_dataset_description': missing_dataset_description(),
     'malformed_accrualperiodicity': malformed_accrualperiodicity(),
@@ -91,12 +89,9 @@ TEST_FROM_GENERATED_RESULT = {
     'malformed_temporal': malformed_temporal(),
     'malformed_temporal2': malformed_temporal2(),
     'too_long_field_title': too_long_field_title(),
-
     'missing_distribution_title': missing_distribution_title(),
-
     'invalid_catalog_publisher_type': invalid_catalog_publisher_type(),
     'invalid_publisher_mbox_format': invalid_publisher_mbox_format(),
-
     'repeated_downloadURL': repeated_downloadURL(),
 }
 

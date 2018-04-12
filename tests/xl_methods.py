@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 xl_methods
 
@@ -26,10 +25,12 @@ def compare_cells_ws(ws1, ws2):
     for row1, row2 in zip(ws1.rows, ws2.rows):
         for cell1, cell2 in zip(row1, row2):
 
-            msg = "".join([_safe_str(cell1.value), " != ",
-                           _safe_str(cell2.value), "\nrow: ",
-                           _safe_str(cell1.row),
-                           " column: ", _safe_str(cell1.column)])
+            msg = "".join([
+                _safe_str(cell1.value), " != ",
+                _safe_str(cell2.value), "\nrow: ",
+                _safe_str(cell1.row), " column: ",
+                _safe_str(cell1.column)
+            ])
 
             value1 = normalize_value(cell1.value)
             value2 = normalize_value(cell2.value)

@@ -1,31 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Módulo `time_series` de pydatajson
 
 Contiene funciones auxiliares para analizar catálogos con series de tiempo,
 definidas según la extensión del perfil de metadatos para series de tiempo.
 """
 
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import with_statement
 import os
 
 
 def field_is_time_series(field, distribution=None):
-    field_may_be_ts = (
-        not field.get("specialType") and
-        not field.get("specialTypeDetail") and
-        (
-            field.get("type", "").lower() == "number" or
-            field.get("type", "").lower() == "integer"
-        ) and
-        field.get("id")
-    )
-    distribution_may_has_ts = (
-        not distribution or distribution_has_time_index(distribution)
-    )
+    field_may_be_ts = (not field.get("specialType")
+                       and not field.get("specialTypeDetail")
+                       and (field.get("type", "").lower() == "number"
+                            or field.get("type", "").lower() == "integer")
+                       and field.get("id"))
+    distribution_may_has_ts = (not distribution
+                               or distribution_has_time_index(distribution))
     return field_may_be_ts and distribution_may_has_ts
 
 

@@ -5,7 +5,6 @@ Conjunto de herramientas para validar y manipular la información presente en
 el archivo `data.json` de un Portal de Datos
 """
 
-from __future__ import absolute_import
 from .core import DataJson
 from .helpers import parse_repeating_time_interval
 from . import helpers

@@ -19,7 +19,8 @@ with open(os.path.abspath("requirements_dev.txt")) as f:
 setup(
     name='pydatajson',
     version='0.4.1',
-    description="Paquete en python con herramientas para generar y validar metadatos de catálogos de datos en formato data.json.",
+    description=
+    "Paquete en python con herramientas para generar y validar metadatos de catálogos de datos en formato data.json.",
     long_description=readme + '\n\n' + history,
     author="Datos Argentina",
     author_email='datos@modernizacion.gob.ar',
@@ -27,8 +28,7 @@ setup(
     packages=[
         'pydatajson',
     ],
-    package_dir={'pydatajson':
-                 'pydatajson'},
+    package_dir={'pydatajson': 'pydatajson'},
     include_package_data=True,
     install_requires=requirements,
     license="MIT license",
@@ -45,5 +45,4 @@ setup(
         'Programming Language :: Python :: 3.6',
     ],
     test_suite='tests',
-    tests_require=test_requirements
-)
+    tests_require=test_requirements)

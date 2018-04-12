@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Módulo 'documentation' de Pydatajson
 
 Contiene métodos para generar documentación en markdown de distintos
 componentes de un catálogo.
 """
-
-from __future__ import print_function, unicode_literals, with_statement
 
 from six.moves import map
 
@@ -32,15 +29,15 @@ def dataset_to_markdown(dataset):
 """
 
     if "distribution" in dataset:
-        distributions = "".join(map(distribution_to_markdown, dataset["distribution"]))
+        distributions = "".join(
+            map(distribution_to_markdown, dataset["distribution"]))
     else:
         distributions = ""
 
     text = text_template.format(
         title=dataset["title"],
         description=dataset.get("description", ""),
-        distributions=distributions
-    )
+        distributions=distributions)
 
     return text
 
@@ -65,15 +62,15 @@ def distribution_to_markdown(distribution):
 """
 
     if "field" in distribution:
-        fields = "- " + "\n- ".join(map(field_to_markdown, distribution["field"]))
+        fields = "- " + "\n- ".join(
+            map(field_to_markdown, distribution["field"]))
     else:
         fields = ""
 
     text = text_template.format(
         title=distribution["title"],
         description=distribution.get("description", ""),
-        fields=fields
-    )
+        fields=fields)
 
     return text
 
@@ -97,7 +94,7 @@ def field_to_markdown(field):
         field["description"]) if "description" in field else ""
 
     text_template = "{title}{type}{description}"
-    text = text_template.format(title=field_title, type=field_type,
-                                description=field_desc)
+    text = text_template.format(
+        title=field_title, type=field_type, description=field_desc)
 
     return text

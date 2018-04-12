@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-
 """Tests del modulo pydatajson."""
-
-from __future__ import print_function, unicode_literals, with_statement
 
 import os.path
 from collections import OrderedDict
@@ -13,7 +10,6 @@ import vcr
 from nose.tools import assert_true, assert_false, assert_equal, assert_list_equal, assert_raises
 from six import iteritems
 
-
 try:
     import mock
 except ImportError:
@@ -22,9 +18,10 @@ import filecmp
 from .context import pydatajson
 from .support.decorators import load_expected_result, RESULTS_DIR
 
-my_vcr = vcr.VCR(path_transformer=vcr.VCR.ensure_suffix('.yaml'),
-                 cassette_library_dir=os.path.join("tests", "cassetes"),
-                 record_mode='once')
+my_vcr = vcr.VCR(
+    path_transformer=vcr.VCR.ensure_suffix('.yaml'),
+    cassette_library_dir=os.path.join("tests", "cassetes"),
+    record_mode='once')
 
 
 class TestDataJsonTestCase(object):
@@ -52,92 +49,88 @@ class TestDataJsonTestCase(object):
     # Reporte esperado para "full_data.json", con harvest = 0
     LOCAL_URL = os.path.join(SAMPLES_DIR, "full_data.json")
     EXPECTED_REPORT = [
-        OrderedDict([(u'catalog_metadata_url', u'tests/samples/full_data.json'),
-                     (u'catalog_federation_id', u'modernizacion'),
-                     (u'catalog_federation_org', None),
-                     (u'catalog_title', u'Datos Argentina'),
-                     (u'catalog_description',
-                      u'Portal de Datos Abiertos del Gobierno de la Rep\xfablica Argentina'),
-                     (u'valid_catalog_metadata', 1),
-                     (u'valid_dataset_metadata', 1),
-                     (u'dataset_index', 0),
-                     (u'harvest', 1),
-                     (u'dataset_identifier',
-                      u'99db6631-d1c9-470b-a73e-c62daa32c777'),
-                     (u'dataset_title',
-                      u'Sistema de contrataciones electr\xf3nicas'),
-                     (u'dataset_accrualPeriodicity', u'R/P1Y'),
-                     (u'dataset_description',
-                      u'Datos correspondientes al Sistema de Contrataciones Electr\xf3nicas (Argentina Compra)'),
-                     (u'dataset_publisher_name',
-                      u'Ministerio de Modernizaci\xf3n. Secretar\xeda de Modernizaci\xf3n Administrativa. Oficina Nacional de Contrataciones'),
-                     (u'dataset_superTheme', u'econ'),
-                     (u'dataset_theme',
-                      u'contrataciones, compras, convocatorias'),
-                     (u'dataset_landingPage',
-                      u'http://datos.gob.ar/dataset/sistema-de-contrataciones-electronicas-argentina-compra'),
-                     (u'dataset_landingPage_generated',
-                      u'dataset/99db6631-d1c9-470b-a73e-c62daa32c777'),
-                     (u'dataset_issued',
-                      u'2016-04-14T19:48:05.433640-03:00'),
-                     (u'dataset_modified',
-                      u'2016-04-19T19:48:05.433640-03:00'),
-                     (u'distributions_formats', '{"CSV": 1}'),
-                     (u'distributions_list',
-                      u'"Convocatorias abiertas durante el a\xf1o 2015": http://186.33.211.253/dataset/99db6631-d1c9-470b-a73e-c62daa32c420/resource/4b7447cb-31ff-4352-96c3-589d212e1cc9/download/convocatorias-abiertas-anio-2015.csv'),
-                     (u'dataset_license',
-                      u'Open Data Commons Open Database License 1.0'),
-                     (u'dataset_language', u'spa'),
-                     (u'dataset_spatial', u'ARG'),
-                     (u'dataset_temporal', u'2015-01-01/2015-12-31'),
-                     (u'notas', u'')]),
-        OrderedDict([(u'catalog_metadata_url', u'tests/samples/full_data.json'),
-                     (u'catalog_federation_id',
-                      u'modernizacion'),
-                     (u'catalog_federation_org', None),
-                     (u'catalog_title',
-                      u'Datos Argentina'),
-                     (u'catalog_description',
-                      u'Portal de Datos Abiertos del Gobierno de la Rep\xfablica Argentina'),
-                     (u'valid_catalog_metadata', 1),
-                     (u'valid_dataset_metadata', 1),
-                     (u'dataset_index', 1),
-                     (u'harvest', 1),
-                     (u'dataset_identifier',
-                      u'99db6631-d1c9-470b-a73e-c62daa32c420'),
-                     (u'dataset_title',
-                      u'Sistema de contrataciones electr\xf3nicas (sin datos)'),
-                     (u'dataset_accrualPeriodicity',
-                      u'R/P1Y'),
-                     (u'dataset_description',
-                      u'Datos correspondientes al Sistema de Contrataciones Electr\xf3nicas (Argentina Compra) (sin datos)'),
-                     (u'dataset_publisher_name',
-                      u'Ministerio de Modernizaci\xf3n. Secretar\xeda de Modernizaci\xf3n Administrativa. Oficina Nacional de Contrataciones'),
-                     (u'dataset_superTheme',
-                      u'ECON'),
-                     (u'dataset_theme',
-                      u'contrataciones, compras, convocatorias'),
-                     (u'dataset_landingPage',
-                      u'http://datos.gob.ar/dataset/sistema-de-contrataciones-electronicas-argentina-compra'),
-                     (u'dataset_landingPage_generated',
-                      u'dataset/99db6631-d1c9-470b-a73e-c62daa32c420'),
-                     (u'dataset_issued',
-                      u'2016-04-14T19:48:05.433640-03:00'),
-                     (u'dataset_modified',
-                      u'2016-04-19T19:48:05.433640-03:00'),
-                     (u'distributions_formats',
-                      '{"PDF": 1}'),
-                     (u'distributions_list',
-                      u'"Convocatorias abiertas durante el a\xf1o 2015": http://186.33.211.253/dataset/99db6631-d1c9-470b-a73e-c62daa32c420/resource/4b7447cb-31ff-4352-96c3-589d212e1cc9/download/convocatorias-abiertas-anio-2015.pdf'),
-                     (u'dataset_license',
-                      u'Open Data Commons Open Database License 1.0'),
-                     (u'dataset_language',
-                      u'spa'),
-                     (u'dataset_spatial',
-                      u'ARG'),
-                     (u'dataset_temporal',
-                      u'2015-01-01/2015-12-31'),
-                     (u'notas', u'No tiene distribuciones con datos.')])]
+        OrderedDict([
+            ('catalog_metadata_url', 'tests/samples/full_data.json'),
+            ('catalog_federation_id',
+             'modernizacion'), ('catalog_federation_org',
+                                None), ('catalog_title', 'Datos Argentina'),
+            ('catalog_description',
+             'Portal de Datos Abiertos del Gobierno de la Rep\xfablica Argentina'
+             ), ('valid_catalog_metadata',
+                 1), ('valid_dataset_metadata',
+                      1), ('dataset_index',
+                           0), ('harvest',
+                                1), ('dataset_identifier',
+                                     '99db6631-d1c9-470b-a73e-c62daa32c777'),
+            ('dataset_title', 'Sistema de contrataciones electr\xf3nicas'),
+            ('dataset_accrualPeriodicity', 'R/P1Y'),
+            ('dataset_description',
+             'Datos correspondientes al Sistema de Contrataciones Electr\xf3nicas (Argentina Compra)'
+             ),
+            ('dataset_publisher_name',
+             'Ministerio de Modernizaci\xf3n. Secretar\xeda de Modernizaci\xf3n Administrativa. Oficina Nacional de Contrataciones'
+             ), ('dataset_superTheme',
+                 'econ'), ('dataset_theme',
+                           'contrataciones, compras, convocatorias'),
+            ('dataset_landingPage',
+             'http://datos.gob.ar/dataset/sistema-de-contrataciones-electronicas-argentina-compra'
+             ), ('dataset_landingPage_generated',
+                 'dataset/99db6631-d1c9-470b-a73e-c62daa32c777'),
+            ('dataset_issued', '2016-04-14T19:48:05.433640-03:00'),
+            ('dataset_modified',
+             '2016-04-19T19:48:05.433640-03:00'), ('distributions_formats',
+                                                   '{"CSV": 1}'),
+            ('distributions_list',
+             '"Convocatorias abiertas durante el a\xf1o 2015": http://186.33.211.253/dataset/99db6631-d1c9-470b-a73e-c62daa32c420/resource/4b7447cb-31ff-4352-96c3-589d212e1cc9/download/convocatorias-abiertas-anio-2015.csv'
+             ), ('dataset_license',
+                 'Open Data Commons Open Database License 1.0'),
+            ('dataset_language',
+             'spa'), ('dataset_spatial',
+                      'ARG'), ('dataset_temporal',
+                               '2015-01-01/2015-12-31'), ('notas', '')
+        ]),
+        OrderedDict([
+            ('catalog_metadata_url', 'tests/samples/full_data.json'),
+            ('catalog_federation_id',
+             'modernizacion'), ('catalog_federation_org',
+                                None), ('catalog_title', 'Datos Argentina'),
+            ('catalog_description',
+             'Portal de Datos Abiertos del Gobierno de la Rep\xfablica Argentina'
+             ), ('valid_catalog_metadata',
+                 1), ('valid_dataset_metadata',
+                      1), ('dataset_index',
+                           1), ('harvest',
+                                1), ('dataset_identifier',
+                                     '99db6631-d1c9-470b-a73e-c62daa32c420'),
+            ('dataset_title',
+             'Sistema de contrataciones electr\xf3nicas (sin datos)'),
+            ('dataset_accrualPeriodicity', 'R/P1Y'),
+            ('dataset_description',
+             'Datos correspondientes al Sistema de Contrataciones Electr\xf3nicas (Argentina Compra) (sin datos)'
+             ),
+            ('dataset_publisher_name',
+             'Ministerio de Modernizaci\xf3n. Secretar\xeda de Modernizaci\xf3n Administrativa. Oficina Nacional de Contrataciones'
+             ), ('dataset_superTheme',
+                 'ECON'), ('dataset_theme',
+                           'contrataciones, compras, convocatorias'),
+            ('dataset_landingPage',
+             'http://datos.gob.ar/dataset/sistema-de-contrataciones-electronicas-argentina-compra'
+             ), ('dataset_landingPage_generated',
+                 'dataset/99db6631-d1c9-470b-a73e-c62daa32c420'),
+            ('dataset_issued', '2016-04-14T19:48:05.433640-03:00'),
+            ('dataset_modified',
+             '2016-04-19T19:48:05.433640-03:00'), ('distributions_formats',
+                                                   '{"PDF": 1}'),
+            ('distributions_list',
+             '"Convocatorias abiertas durante el a\xf1o 2015": http://186.33.211.253/dataset/99db6631-d1c9-470b-a73e-c62daa32c420/resource/4b7447cb-31ff-4352-96c3-589d212e1cc9/download/convocatorias-abiertas-anio-2015.pdf'
+             ), ('dataset_license',
+                 'Open Data Commons Open Database License 1.0'),
+            ('dataset_language', 'spa'), ('dataset_spatial', 'ARG'),
+            ('dataset_temporal',
+             '2015-01-01/2015-12-31'), ('notas',
+                                        'No tiene distribuciones con datos.')
+        ])
+    ]
 
     def test_catalog_report_harvest_good(self):
         """catalog_report() marcará para cosecha los datasets con metadata
@@ -218,9 +211,10 @@ class TestDataJsonTestCase(object):
         # dataset del catálogo
         report = [("data.json", "Un dataset que no es")]
         actual = self.dj.catalog_report(
-            catalog, harvest='report', report=report,
-            catalog_id="modernizacion"
-        )
+            catalog,
+            harvest='report',
+            report=report,
+            catalog_id="modernizacion")
 
         expected = list(self.EXPECTED_REPORT)
         expected[0]["harvest"] = 0
@@ -236,8 +230,10 @@ class TestDataJsonTestCase(object):
         report = [(os.path.join(self.SAMPLES_DIR, "full_data.json"),
                    "Sistema de contrataciones electrónicas")]
         actual = self.dj.catalog_report(
-            catalog, harvest='report',
-            report=report, catalog_id="modernizacion")
+            catalog,
+            harvest='report',
+            report=report,
+            catalog_id="modernizacion")
 
         expected = list(self.EXPECTED_REPORT)
         expected[0]["harvest"] = 1
@@ -309,54 +305,45 @@ class TestDataJsonTestCase(object):
         generate_datasets_report() a únicamente los 3 campos requeridos, y
         conservar el accrualPeriodicity original."""
 
-        datasets_report = [
-            {
-                "catalog_metadata_url": 1,
-                "dataset_title": 1,
-                "dataset_accrualPeriodicity": 1,
-                "otra key": 1,
-                "catalog_federation_org": "organizacion-en-ckan",
-                "catalog_federation_id": "organismo",
-                "harvest": 0
-            },
-            {
-                "catalog_metadata_url": 2,
-                "dataset_title": 2,
-                "dataset_accrualPeriodicity": 2,
-                "otra key": 2,
-                "catalog_federation_org": "organizacion-en-ckan",
-                "catalog_federation_id": "organismo",
+        datasets_report = [{
+            "catalog_metadata_url": 1,
+            "dataset_title": 1,
+            "dataset_accrualPeriodicity": 1,
+            "otra key": 1,
+            "catalog_federation_org": "organizacion-en-ckan",
+            "catalog_federation_id": "organismo",
+            "harvest": 0
+        }, {
+            "catalog_metadata_url": 2,
+            "dataset_title": 2,
+            "dataset_accrualPeriodicity": 2,
+            "otra key": 2,
+            "catalog_federation_org": "organizacion-en-ckan",
+            "catalog_federation_id": "organismo",
+            "harvest": 1
+        }, {
+            "catalog_metadata_url": 3,
+            "dataset_title": 3,
+            "dataset_accrualPeriodicity": 3,
+            "otra key": 3,
+            "catalog_federation_org": "organizacion-en-ckan",
+            "catalog_federation_id": "organismo",
+            "harvest": 1
+        }]
 
-                "harvest": 1
-            },
-            {
-                "catalog_metadata_url": 3,
-                "dataset_title": 3,
-                "dataset_accrualPeriodicity": 3,
-                "otra key": 3,
-                "catalog_federation_org": "organizacion-en-ckan",
-                "catalog_federation_id": "organismo",
-
-                "harvest": 1
-            }
-        ]
-
-        expected_config = [
-            {
-                "catalog_metadata_url": 2,
-                "dataset_title": 2,
-                "dataset_accrualPeriodicity": 2,
-                "dataset_owner_org": "organizacion-en-ckan",
-                "job_name": "organismo",
-            },
-            {
-                "catalog_metadata_url": 3,
-                "dataset_title": 3,
-                "dataset_accrualPeriodicity": 3,
-                "dataset_owner_org": "organizacion-en-ckan",
-                "job_name": "organismo",
-            }
-        ]
+        expected_config = [{
+            "catalog_metadata_url": 2,
+            "dataset_title": 2,
+            "dataset_accrualPeriodicity": 2,
+            "dataset_owner_org": "organizacion-en-ckan",
+            "job_name": "organismo",
+        }, {
+            "catalog_metadata_url": 3,
+            "dataset_title": 3,
+            "dataset_accrualPeriodicity": 3,
+            "dataset_owner_org": "organizacion-en-ckan",
+            "job_name": "organismo",
+        }]
 
         self.dj.generate_datasets_report = mock.MagicMock(
             return_value=datasets_report)
@@ -371,52 +358,45 @@ class TestDataJsonTestCase(object):
         generate_datasets_report() a únicamente los 3 campos requeridos, y
         usar "R/P1D" como accrualPeriodicity"""
 
-        datasets_report = [
-            {
-                "catalog_metadata_url": 1,
-                "dataset_title": 1,
-                "dataset_accrualPeriodicity": 1,
-                "catalog_federation_org": "organizacion-en-ckan",
-                "catalog_federation_id": "organismo",
-                "otra key": 1,
-                "harvest": 0
-            },
-            {
-                "catalog_metadata_url": 2,
-                "dataset_title": 2,
-                "dataset_accrualPeriodicity": 2,
-                "catalog_federation_org": "organizacion-en-ckan",
-                "catalog_federation_id": "organismo",
-                "otra key": 2,
-                "harvest": 1
-            },
-            {
-                "catalog_metadata_url": 3,
-                "dataset_title": 3,
-                "dataset_accrualPeriodicity": 3,
-                "catalog_federation_org": "organizacion-en-ckan",
-                "catalog_federation_id": "organismo",
-                "otra key": 3,
-                "harvest": 1
-            }
-        ]
+        datasets_report = [{
+            "catalog_metadata_url": 1,
+            "dataset_title": 1,
+            "dataset_accrualPeriodicity": 1,
+            "catalog_federation_org": "organizacion-en-ckan",
+            "catalog_federation_id": "organismo",
+            "otra key": 1,
+            "harvest": 0
+        }, {
+            "catalog_metadata_url": 2,
+            "dataset_title": 2,
+            "dataset_accrualPeriodicity": 2,
+            "catalog_federation_org": "organizacion-en-ckan",
+            "catalog_federation_id": "organismo",
+            "otra key": 2,
+            "harvest": 1
+        }, {
+            "catalog_metadata_url": 3,
+            "dataset_title": 3,
+            "dataset_accrualPeriodicity": 3,
+            "catalog_federation_org": "organizacion-en-ckan",
+            "catalog_federation_id": "organismo",
+            "otra key": 3,
+            "harvest": 1
+        }]
 
-        expected_config = [
-            {
-                "catalog_metadata_url": 2,
-                "dataset_title": 2,
-                "dataset_accrualPeriodicity": "R/P1D",
-                "dataset_owner_org": "organizacion-en-ckan",
-                "job_name": "organismo",
-            },
-            {
-                "catalog_metadata_url": 3,
-                "dataset_title": 3,
-                "dataset_accrualPeriodicity": "R/P1D",
-                "dataset_owner_org": "organizacion-en-ckan",
-                "job_name": "organismo",
-            }
-        ]
+        expected_config = [{
+            "catalog_metadata_url": 2,
+            "dataset_title": 2,
+            "dataset_accrualPeriodicity": "R/P1D",
+            "dataset_owner_org": "organizacion-en-ckan",
+            "job_name": "organismo",
+        }, {
+            "catalog_metadata_url": 3,
+            "dataset_title": 3,
+            "dataset_accrualPeriodicity": "R/P1D",
+            "dataset_owner_org": "organizacion-en-ckan",
+            "job_name": "organismo",
+        }]
 
         self.dj.generate_datasets_report = mock.MagicMock(
             return_value=datasets_report)
@@ -429,21 +409,18 @@ class TestDataJsonTestCase(object):
     # TESTS DE GENERATE_HARVESTABLE_CATALOGS
 
     CATALOG = {
-        "title": "Micro Catalogo",
-        "dataset": [
-            {
-                "title": "Dataset Valido",
-                "description": "Descripción valida",
-                "distribution": []
-            },
-            {
-                "title": "Dataset Invalido"
-            }
-        ]
+        "title":
+        "Micro Catalogo",
+        "dataset": [{
+            "title": "Dataset Valido",
+            "description": "Descripción valida",
+            "distribution": []
+        }, {
+            "title": "Dataset Invalido"
+        }]
     }
 
-    @mock.patch('pydatajson.readers.read_catalog',
-                return_value=CATALOG.copy())
+    @mock.patch('pydatajson.readers.read_catalog', return_value=CATALOG.copy())
     def test_generate_harvestable_catalogs_all(self, patched_read_catalog):
 
         catalogs = ["URL Catalogo A", "URL Catalogo B"]
@@ -453,8 +430,7 @@ class TestDataJsonTestCase(object):
 
         assert_equal(actual, expected)
 
-    @mock.patch('pydatajson.readers.read_catalog',
-                return_value=CATALOG.copy())
+    @mock.patch('pydatajson.readers.read_catalog', return_value=CATALOG.copy())
     def test_generate_harvestable_catalogs_none(self, patched_read_catalog):
 
         catalogs = ["URL Catalogo A", "URL Catalogo B"]
@@ -466,51 +442,44 @@ class TestDataJsonTestCase(object):
             # Una lista vacía es "falsa"
             assert_false(catalog["dataset"])
 
-    REPORT = [
-        {
-            "catalog_metadata_url": "URL Catalogo A",
-            "dataset_title": "Dataset Valido",
-            "dataset_accrualPeriodicity": "eventual",
-            "harvest": 1
-        },
-        {
-            "catalog_metadata_url": "URL Catalogo A",
-            "dataset_title": "Dataset Invalido",
-            "dataset_accrualPeriodicity": "eventual",
-            "harvest": 0
-        },
-        {
-            "catalog_metadata_url": "URL Catalogo B",
-            "dataset_title": "Dataset Valido",
-            "dataset_accrualPeriodicity": "eventual",
-            "harvest": 1
-        },
-        {
-            "catalog_metadata_url": "URL Catalogo B",
-            "dataset_title": "Dataset Invalido",
-            "dataset_accrualPeriodicity": "eventual",
-            "harvest": 0
-        }
-    ]
+    REPORT = [{
+        "catalog_metadata_url": "URL Catalogo A",
+        "dataset_title": "Dataset Valido",
+        "dataset_accrualPeriodicity": "eventual",
+        "harvest": 1
+    }, {
+        "catalog_metadata_url": "URL Catalogo A",
+        "dataset_title": "Dataset Invalido",
+        "dataset_accrualPeriodicity": "eventual",
+        "harvest": 0
+    }, {
+        "catalog_metadata_url": "URL Catalogo B",
+        "dataset_title": "Dataset Valido",
+        "dataset_accrualPeriodicity": "eventual",
+        "harvest": 1
+    }, {
+        "catalog_metadata_url": "URL Catalogo B",
+        "dataset_title": "Dataset Invalido",
+        "dataset_accrualPeriodicity": "eventual",
+        "harvest": 0
+    }]
 
-    @mock.patch('pydatajson.DataJson.generate_datasets_report',
-                return_value=REPORT)
-    @mock.patch('pydatajson.readers.read_catalog',
-                return_value=CATALOG.copy())
+    @mock.patch(
+        'pydatajson.DataJson.generate_datasets_report', return_value=REPORT)
+    @mock.patch('pydatajson.readers.read_catalog', return_value=CATALOG.copy())
     def test_generate_harvestable_catalogs_valid(self, mock_read_catalog,
                                                  mock_gen_dsets_report):
 
         catalogs = ["URL Catalogo A", "URL Catalogo B"]
 
         expected_catalog = {
-            "title": "Micro Catalogo",
-            "dataset": [
-                {
-                    "title": "Dataset Valido",
-                    "description": "Descripción valida",
-                    "distribution": []
-                }
-            ]
+            "title":
+            "Micro Catalogo",
+            "dataset": [{
+                "title": "Dataset Valido",
+                "description": "Descripción valida",
+                "distribution": []
+            }]
         }
         expected = [expected_catalog, expected_catalog]
 
@@ -519,31 +488,27 @@ class TestDataJsonTestCase(object):
 
         assert_list_equal(actual, expected)
 
-    @mock.patch('pydatajson.DataJson.generate_datasets_report',
-                return_value=REPORT)
-    @mock.patch('pydatajson.readers.read_catalog',
-                return_value=CATALOG.copy())
+    @mock.patch(
+        'pydatajson.DataJson.generate_datasets_report', return_value=REPORT)
+    @mock.patch('pydatajson.readers.read_catalog', return_value=CATALOG.copy())
     def test_generate_harvestable_catalogs_report(self, mock_read_catalog,
                                                   mock_gen_dsets_report):
 
         catalogs = ["URL Catalogo A", "URL Catalogo B"]
 
         expected_catalog = {
-            "title": "Micro Catalogo",
-            "dataset": [
-                {
-                    "title": "Dataset Valido",
-                    "description": "Descripción valida",
-                    "distribution": []
-                }
-            ]
+            "title":
+            "Micro Catalogo",
+            "dataset": [{
+                "title": "Dataset Valido",
+                "description": "Descripción valida",
+                "distribution": []
+            }]
         }
         expected = [expected_catalog, expected_catalog]
 
-        datasets_to_harvest = [
-            ("URL Catalogo A", "Dataset Valido"),
-            ("URL Catalogo B", "Dataset Valido")
-        ]
+        datasets_to_harvest = [("URL Catalogo A", "Dataset Valido"),
+                               ("URL Catalogo B", "Dataset Valido")]
 
         actual = self.dj.generate_harvestable_catalogs(
             catalogs, harvest='report', report=datasets_to_harvest)
@@ -557,24 +522,22 @@ class TestDataJsonTestCase(object):
                                "several_datasets_for_harvest.json")
         actual = self.dj.generate_datasets_summary(catalog)
         expected = [
-            OrderedDict([('indice', 0),
-                         ('titulo', 'Sistema de contrataciones electrónicas UNO'),
-                         ('identificador', None),
-                         ('estado_metadatos', 'ERROR'),
-                         ('cant_errores', 4),
-                         ('cant_distribuciones', 4)]),
-            OrderedDict([('indice', 1),
-                         ('titulo', 'Sistema de contrataciones electrónicas DOS'),
-                         ('identificador', None),
-                         ('estado_metadatos', 'OK'),
-                         ('cant_errores', 0),
-                         ('cant_distribuciones', 1)]),
-            OrderedDict([('indice', 2),
-                         ('titulo', 'Sistema de contrataciones electrónicas TRES'),
-                         ('identificador', None),
-                         ('estado_metadatos', 'OK'),
-                         ('cant_errores', 0),
-                         ('cant_distribuciones', 1)])]
+            OrderedDict(
+                [('indice', 0), ('titulo',
+                                 'Sistema de contrataciones electrónicas UNO'),
+                 ('identificador', None), ('estado_metadatos', 'ERROR'),
+                 ('cant_errores', 4), ('cant_distribuciones', 4)]),
+            OrderedDict([('indice',
+                          1), ('titulo',
+                               'Sistema de contrataciones electrónicas DOS'),
+                         ('identificador', None), ('estado_metadatos', 'OK'),
+                         ('cant_errores', 0), ('cant_distribuciones', 1)]),
+            OrderedDict([('indice',
+                          2), ('titulo',
+                               'Sistema de contrataciones electrónicas TRES'),
+                         ('identificador', None), ('estado_metadatos', 'OK'),
+                         ('cant_errores', 0), ('cant_distribuciones', 1)])
+        ]
 
         assert_list_equal(actual, expected)
 
@@ -614,7 +577,7 @@ revíselo manualmente""".format(actual_filename)
             'datasets_meta_ok_pct': round(100 * float(2) / 3, 2),
         }
 
-        for k, v in expected.items():
+        for k, v in list(expected.items()):
             assert_true(indicators[k], v)
 
     @my_vcr.use_cassette()
@@ -637,7 +600,7 @@ revíselo manualmente""".format(actual_filename)
             },
         }
 
-        for k, v in expected.items():
+        for k, v in list(expected.items()):
             assert_equal(indicators[k], v)
 
     @my_vcr.use_cassette()
@@ -654,7 +617,7 @@ revíselo manualmente""".format(actual_filename)
             }
         }
 
-        for k, v in expected.items():
+        for k, v in list(expected.items()):
             assert_equal(indicators[k], v)
 
     def test_field_indicators_on_min_catalog(self):
@@ -668,7 +631,7 @@ revíselo manualmente""".format(actual_filename)
             'campos_optativos_pct': 0.0,
         }
 
-        for k, v in expected.items():
+        for k, v in list(expected.items()):
             assert_equal(indicators[k], v)
 
     def test_field_indicators_on_full_catalog(self):
@@ -682,7 +645,7 @@ revíselo manualmente""".format(actual_filename)
             'campos_optativos_pct': 100
         }
 
-        for k, v in expected.items():
+        for k, v in list(expected.items()):
             assert_equal(indicators[k], v)
 
     def test_federation_indicators_same_catalog(self):
@@ -698,7 +661,7 @@ revíselo manualmente""".format(actual_filename)
             'datasets_federados_pct': 100
         }
 
-        for k, v in expected.items():
+        for k, v in list(expected.items()):
             assert_equal(indicators[k], v)
 
     def test_federation_indicators_no_datasets(self):
@@ -708,16 +671,19 @@ revíselo manualmente""".format(actual_filename)
 
         # Esperado: ningún dataset está federado
         expected = {
-            'datasets_federados_cant': 0,
-            'datasets_no_federados_cant': 3,
-            'datasets_no_federados': [
-                ('Sistema de contrataciones electrónicas UNO', None),
-                ('Sistema de contrataciones electrónicas DOS', None),
-                ('Sistema de contrataciones electrónicas TRES', None)],
-            'datasets_federados_pct': 0
+            'datasets_federados_cant':
+            0,
+            'datasets_no_federados_cant':
+            3,
+            'datasets_no_federados':
+            [('Sistema de contrataciones electrónicas UNO',
+              None), ('Sistema de contrataciones electrónicas DOS', None),
+             ('Sistema de contrataciones electrónicas TRES', None)],
+            'datasets_federados_pct':
+            0
         }
 
-        for k, v in expected.items():
+        for k, v in list(expected.items()):
             assert_equal(indicators[k], v)
 
     def test_federation_indicators_removed_datasets(self):
@@ -726,9 +692,8 @@ revíselo manualmente""".format(actual_filename)
         # se buscan los datasets federados en el central que fueron eliminados
         # en el específico pero no se encuentran porque el publisher.name no
         # tiene publicado ningún otro dataset en el catálogo específico
-        catalog = os.path.join(
-            self.SAMPLES_DIR, "catalogo_justicia_removed.json"
-        )
+        catalog = os.path.join(self.SAMPLES_DIR,
+                               "catalogo_justicia_removed.json")
         central = os.path.join(self.SAMPLES_DIR, "catalogo_justicia.json")
         indicators = self.dj.generate_catalogs_indicators(catalog, central)[1]
 
@@ -739,28 +704,28 @@ revíselo manualmente""".format(actual_filename)
             "datasets_federados_eliminados": []
         }
 
-        for k, v in expected.items():
+        for k, v in list(expected.items()):
             assert_equal(indicators[k], v)
 
         # CASO 2
         # se buscan los datasets federados en el central que fueron eliminados
         # en el específico y se encuentran porque el publisher.name tiene
         # publicado otro dataset en el catálogo específico
-        catalog = os.path.join(
-            self.SAMPLES_DIR, "catalogo_justicia_removed_publisher.json"
-        )
+        catalog = os.path.join(self.SAMPLES_DIR,
+                               "catalogo_justicia_removed_publisher.json")
         indicators = self.dj.generate_catalogs_indicators(catalog, central)[1]
         # Esperado: no se encuentra el dataset removido, porque el
         # publisher.name no existe en ningún otro dataset
         expected = {
-            "datasets_federados_eliminados_cant": 1,
-            "datasets_federados_eliminados": [(
-                'Base de datos legislativos Infoleg',
-                "http://datos.jus.gob.ar/dataset/base-de-datos-legislativos-infoleg"
-            )]
+            "datasets_federados_eliminados_cant":
+            1,
+            "datasets_federados_eliminados":
+            [('Base de datos legislativos Infoleg',
+              "http://datos.jus.gob.ar/dataset/base-de-datos-legislativos-infoleg"
+              )]
         }
 
-        for k, v in expected.items():
+        for k, v in list(expected.items()):
             assert_equal(indicators[k], v)
 
     @my_vcr.use_cassette()
@@ -768,10 +733,8 @@ revíselo manualmente""".format(actual_filename)
         one_catalog = os.path.join(self.SAMPLES_DIR, "several_datasets.json")
         other_catalog = os.path.join(self.SAMPLES_DIR, "full_data.json")
 
-        indicators, network_indicators = self.dj.generate_catalogs_indicators([
-            one_catalog,
-            other_catalog
-        ])
+        indicators, network_indicators = self.dj.generate_catalogs_indicators(
+            [one_catalog, other_catalog])
 
         # Esperado: suma de los indicadores individuales
         # No se testean los indicadores de actualización porque las fechas no
@@ -792,7 +755,7 @@ revíselo manualmente""".format(actual_filename)
             'campos_recomendados_pct': 50.72,
         }
 
-        for k, v in expected.items():
+        for k, v in list(expected.items()):
             assert_equal(network_indicators[k], v)
 
     @my_vcr.use_cassette()
@@ -810,7 +773,7 @@ revíselo manualmente""".format(actual_filename)
             'datasets_actualizados_pct': 0
         }
 
-        for k, v in expected.items():
+        for k, v in list(expected.items()):
             assert_equal(indicators[k], v, k)
 
     @my_vcr.use_cassette()
@@ -826,7 +789,7 @@ revíselo manualmente""".format(actual_filename)
             'datasets_actualizados_pct': 0
         }
 
-        for k, v in expected.items():
+        for k, v in list(expected.items()):
             assert_equal(indicators[k], v, k)
 
     @my_vcr.use_cassette()
@@ -847,7 +810,7 @@ revíselo manualmente""".format(actual_filename)
             'datasets_frecuencia_cant': {}
         }
 
-        for k, v in expected.items():
+        for k, v in list(expected.items()):
             assert_equal(indicators[k], v, k)
 
     @my_vcr.use_cassette()
@@ -859,11 +822,9 @@ revíselo manualmente""".format(actual_filename)
         dias_diff = (datetime.now() - datetime(2016, 4, 14)).days
 
         # Catálogo no tiene 'issued', pero su dataset sí -> uso el del dataset
-        expected = {
-            'catalogo_ultima_actualizacion_dias': dias_diff
-        }
+        expected = {'catalogo_ultima_actualizacion_dias': dias_diff}
 
-        for k, v in expected.items():
+        for k, v in list(expected.items()):
             assert_equal(indicators[k], v, k)
 
     def test_dataset_is_updated(self):
@@ -880,11 +841,9 @@ revíselo manualmente""".format(actual_filename)
     def test_date_network_indicators_empty_catalog(self):
         catalog = os.path.join(self.SAMPLES_DIR, "invalid_catalog_empty.json")
         indics, network_indics = self.dj.generate_catalogs_indicators(
-            [catalog,
-             catalog]
-        )
+            [catalog, catalog])
 
-        for k, v in network_indics.items():
+        for k, v in list(network_indics.items()):
             assert_true(v is not None)
 
     def test_DataJson_constructor(self):

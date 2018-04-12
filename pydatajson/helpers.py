@@ -1,11 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Métodos auxiliares"""
-
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import with_statement
 
 from datetime import datetime
 import os
@@ -21,10 +16,7 @@ from unidecode import unidecode
 ABSOLUTE_PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 ABSOLUTE_SCHEMA_DIR = os.path.join(ABSOLUTE_PROJECT_DIR, "schemas")
 STOP_WORDS = [
-    "el", "la", "los", "las",
-    "de", "del",
-    "y", "a",
-    "un", "una", "en"
+    "el", "la", "los", "las", "de", "del", "y", "a", "un", "una", "en"
 ]
 
 
@@ -39,7 +31,8 @@ def title_to_name(title, decode=True):
     filtered_title = re.sub(r'[^a-z0-9- ]+', '', title)
 
     # remueve stop words y espacios y une palabras sólo con un "-"
-    normalized_title = '-'.join([word for word in filtered_title.split() if word not in STOP_WORDS])
+    normalized_title = '-'.join(
+        [word for word in filtered_title.split() if word not in STOP_WORDS])
 
     return normalized_title
 
@@ -70,9 +63,16 @@ def parse_date_string(date_string):
 
 
 def clean_str(s):
-    replacements = {"á": "a", "é": "e", "í": "i", "ó": "o", "ú": "u",
-                    ":": "", ".": ""}
-    for old, new in replacements.iteritems():
+    replacements = {
+        "á": "a",
+        "é": "e",
+        "í": "i",
+        "ó": "o",
+        "ú": "u",
+        ":": "",
+        ".": ""
+    }
+    for old, new in replacements.items():
         s = s.replace(old, new)
     return s.lower().strip()
 
@@ -114,8 +114,7 @@ def traverse_dict(dicc, keys, default_value=None):
     for key in keys:
         if isinstance(dicc, dict) and key in dicc:
             dicc = dicc[key]
-        elif (isinstance(dicc, list)
-              and isinstance(key, int)
+        elif (isinstance(dicc, list) and isinstance(key, int)
               and key < len(dicc)):
             dicc = dicc[key]
         else:
@@ -200,8 +199,10 @@ def sheet_to_table(worksheet):
             continue
 
         # limita la cantidad de celdas a considerar, por la cantidad de headers
-        row_cells = [parse_value(cell) for index, cell in enumerate(row)
-                     if index < len(headers)]
+        row_cells = [
+            parse_value(cell) for index, cell in enumerate(row)
+            if index < len(headers)
+        ]
 
         # agrega las filas siguientes que tengan al menos un campo no nulo
         if any(row_cells):
@@ -213,7 +214,8 @@ def sheet_to_table(worksheet):
     # convierte las filas en diccionarios con los headers como keys
     table = [
         # Ignoro los campos con valores nulos (None)
-        {k: v for (k, v) in zip(headers, row) if v is not None}
+        {k: v
+         for (k, v) in zip(headers, row) if v is not None}
         for row in value_rows
     ]
 
@@ -239,7 +241,7 @@ def add_dicts(one_dict, other_dict):
         dict: resultado de la suma
     """
     result = other_dict.copy()
-    for k, v in one_dict.items():
+    for k, v in list(one_dict.items()):
         if v is None:
             v = 0
 
@@ -262,9 +264,7 @@ def parse_repeating_time_interval(date_str, to="days"):
         return parse_repeating_time_interval_to_str(date_str)
 
     else:
-        raise NotImplementedError(
-            "Falta implementar parsing a {}".format(to)
-        )
+        raise NotImplementedError("Falta implementar parsing a {}".format(to))
 
 
 def parse_repeating_time_interval_to_days(date_str):
@@ -273,14 +273,7 @@ def parse_repeating_time_interval_to_days(date_str):
     Devuelve 0 en caso de que el intervalo sea inválido.
     """
 
-    intervals = {
-        'Y': 365,
-        'M': 30,
-        'W': 7,
-        'D': 1,
-        'H': 0,
-        'S': 0
-    }
+    intervals = {'Y': 365, 'M': 30, 'W': 7, 'D': 1, 'H': 0, 'S': 0}
 
     if date_str.find('R/P') != 0:  # Periodicity mal formada
         return 0
@@ -310,10 +303,10 @@ def parse_repeating_time_interval_to_str(date_str):
     parsear cualquier caso.
     """
 
-    with open(os.path.join(ABSOLUTE_SCHEMA_DIR,
-                           "accrualPeriodicity.json"), "r") as f:
-        freqs_map = {freq["id"]: freq["description"]
-                     for freq in json.load(f)}
+    with open(
+            os.path.join(ABSOLUTE_SCHEMA_DIR, "accrualPeriodicity.json"),
+            "r") as f:
+        freqs_map = {freq["id"]: freq["description"] for freq in json.load(f)}
 
     return freqs_map[date_str]
 

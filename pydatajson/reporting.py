@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Módulo 'reporting' de Pydatajson
 
 Contiene los métodos para generar reportes sobre un catálogo.
 """
-
-from __future__ import unicode_literals, print_function, with_statement, absolute_import
 
 from collections import OrderedDict
 
@@ -44,8 +41,9 @@ def generate_datasets_summary(catalog, export_path=None, validator=None):
     # Trato de leer todos los datasets bien formados de la lista
     # catalog["dataset"], si existe.
     if "dataset" in catalog and isinstance(catalog["dataset"], list):
-        datasets = [d if isinstance(d, dict) else {} for d in
-                    catalog["dataset"]]
+        datasets = [
+            d if isinstance(d, dict) else {} for d in catalog["dataset"]
+        ]
     else:
         # Si no, considero que no hay datasets presentes
         datasets = []

@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Módulo 'indicators' de Pydatajson
 
 Contiene los métodos para monitorear y generar indicadores de un catálogo o de
 una red de catálogos.
 """
-
-from __future__ import print_function, absolute_import, unicode_literals, with_statement
 
 import json
 import os
@@ -24,7 +21,8 @@ ABSOLUTE_PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 CATALOG_FIELDS_PATH = os.path.join(ABSOLUTE_PROJECT_DIR, "fields")
 
 
-def generate_catalogs_indicators(catalogs, central_catalog=None,
+def generate_catalogs_indicators(catalogs,
+                                 central_catalog=None,
                                  validator=None):
     """Genera una lista de diccionarios con varios indicadores sobre
     los catálogos provistos, tales como la cantidad de datasets válidos,
@@ -46,7 +44,7 @@ def generate_catalogs_indicators(catalogs, central_catalog=None,
     central_catalog = central_catalog or CENTRAL_CATALOG
     assert isinstance(catalogs, string_types + (dict, list))
     # Si se pasa un único catálogo, genero una lista que lo contenga
-    if isinstance(catalogs, string_types + (dict,)):
+    if isinstance(catalogs, string_types + (dict, )):
         catalogs = [catalogs]
 
     # Leo todos los catálogos
@@ -61,17 +59,14 @@ def generate_catalogs_indicators(catalogs, central_catalog=None,
         fields_count, result = _generate_indicators(
             catalog, validator=validator)
         if central_catalog:
-            result.update(_federation_indicators(catalog,
-                                                 central_catalog))
+            result.update(_federation_indicators(catalog, central_catalog))
 
         indicators_list.append(result)
         # Sumo a la cuenta total de campos usados/totales
         fields = helpers.add_dicts(fields_count, fields)
 
     # Indicadores de la red entera
-    network_indicators = {
-        'catalogos_cant': len(catalogs)
-    }
+    network_indicators = {'catalogos_cant': len(catalogs)}
 
     # Sumo los indicadores individuales al total
     indicators_total = indicators_list[0].copy()
@@ -101,9 +96,7 @@ def _generate_indicators(catalog, validator=None):
     result.update(_generate_date_indicators(catalog))
     # Agrego la cuenta de los formatos de las distribuciones
     count = _count_distribution_formats(catalog)
-    result.update({
-        'distribuciones_formatos_cant': count
-    })
+    result.update({'distribuciones_formatos_cant': count})
     # Agrego porcentaje de campos recomendados/optativos usados
     fields_count = _count_required_and_optional_fields(catalog)
     recomendados_pct = 100 * float(fields_count['recomendado']) / \
@@ -154,9 +147,7 @@ def _federation_indicators(catalog, central_catalog):
     # catálogo específico, a ver si está en el catálogo específico
     # si no está, probablemente signifique que fue eliminado
     filtered_central = _filter_by_likely_publisher(
-        central_catalog.get('dataset', []),
-        catalog.get('dataset', [])
-    )
+        central_catalog.get('dataset', []), catalog.get('dataset', []))
     for central_dataset in filtered_central:
         found = False
         for dataset in catalog.get('dataset', []):
@@ -167,8 +158,7 @@ def _federation_indicators(catalog, central_catalog):
             datasets_federados_eliminados_cant += 1
             datasets_federados_eliminados.append(
                 (central_dataset.get('title'),
-                 central_dataset.get('landingPage'))
-            )
+                 central_dataset.get('landingPage')))
 
     if federados or no_federados:  # Evita división por 0
         federados_pct = 100 * float(federados) / (federados + no_federados)
@@ -178,7 +168,8 @@ def _federation_indicators(catalog, central_catalog):
     result = {
         'datasets_federados_cant': federados,
         'datasets_no_federados_cant': no_federados,
-        'datasets_federados_eliminados_cant': datasets_federados_eliminados_cant,
+        'datasets_federados_eliminados_cant':
+        datasets_federados_eliminados_cant,
         'datasets_federados_eliminados': datasets_federados_eliminados,
         'datasets_no_federados': datasets_no_federados,
         'datasets_federados': datasets_federados,
@@ -222,8 +213,10 @@ def _network_indicator_percentages(fields, network_indicators):
             fields['total_optativo']
 
         network_indicators.update({
-            'campos_recomendados_pct': round(rec_pct, 2),
-            'campos_optativos_pct': round(opt_pct, 2)
+            'campos_recomendados_pct':
+            round(rec_pct, 2),
+            'campos_optativos_pct':
+            round(opt_pct, 2)
         })
 
     # % de datasets actualizados
@@ -302,11 +295,9 @@ def _generate_date_indicators(catalog, tolerance=0.2):
     """
     result = {}
 
-    dias_ultima_actualizacion = _days_from_last_update(
-        catalog, "modified")
+    dias_ultima_actualizacion = _days_from_last_update(catalog, "modified")
     if not dias_ultima_actualizacion:
-        dias_ultima_actualizacion = _days_from_last_update(
-            catalog, "issued")
+        dias_ultima_actualizacion = _days_from_last_update(catalog, "issued")
 
     result['catalogo_ultima_actualizacion_dias'] = \
         dias_ultima_actualizacion
@@ -353,10 +344,14 @@ def _generate_date_indicators(catalog, tolerance=0.2):
     if datasets_total:
         actualizados_pct = float(actualizados) / datasets_total
     result.update({
-        'datasets_desactualizados_cant': desactualizados,
-        'datasets_actualizados_cant': actualizados,
-        'datasets_actualizados_pct': 100 * round(actualizados_pct, 2),
-        'datasets_frecuencia_cant': periodicity_amount
+        'datasets_desactualizados_cant':
+        desactualizados,
+        'datasets_actualizados_cant':
+        actualizados,
+        'datasets_actualizados_pct':
+        100 * round(actualizados_pct, 2),
+        'datasets_frecuencia_cant':
+        periodicity_amount
     })
     return result
 
@@ -459,8 +454,7 @@ def _count_required_and_optional_fields(catalog):
     catalog = readers.read_catalog(catalog)
 
     # Archivo .json con el uso de cada campo. Lo cargamos a un dict
-    catalog_fields_path = os.path.join(CATALOG_FIELDS_PATH,
-                                       'fields.json')
+    catalog_fields_path = os.path.join(CATALOG_FIELDS_PATH, 'fields.json')
     with open(catalog_fields_path) as f:
         catalog_fields = json.load(f)
 
@@ -493,7 +487,7 @@ def _count_fields_recursive(dataset, fields):
         'total_requerido': 0
     }
 
-    for k, v in fields.items():
+    for k, v in list(fields.items()):
         # Si la clave es un diccionario se implementa recursivamente el
         # mismo algoritmo
         if isinstance(v, dict):
@@ -524,8 +518,11 @@ def _count_fields_recursive(dataset, fields):
     return key_count
 
 
-def datasets_equal(dataset, other, fields_dataset=None,
-                   fields_distribution=None, return_diff=False):
+def datasets_equal(dataset,
+                   other,
+                   fields_dataset=None,
+                   fields_distribution=None,
+                   return_diff=False):
     """Función de igualdad de dos datasets: se consideran iguales si
     los valores de los campos 'title', 'publisher.name',
     'accrualPeriodicity' e 'issued' son iguales en ambos.
@@ -542,10 +539,7 @@ def datasets_equal(dataset, other, fields_dataset=None,
 
     # Campos a comparar. Si es un campo anidado escribirlo como lista
     if not fields_dataset:
-        fields_dataset = [
-            'title',
-            ['publisher', 'name']
-        ]
+        fields_dataset = ['title', ['publisher', 'name']]
 
     for field_dataset in fields_dataset:
         if isinstance(field_dataset, list):
@@ -578,8 +572,8 @@ def datasets_equal(dataset, other, fields_dataset=None,
 
             for field_distribution in fields_distribution:
                 if isinstance(field_distribution, list):
-                    value = helpers.traverse_dict(
-                        dataset_distribution, field_distribution)
+                    value = helpers.traverse_dict(dataset_distribution,
+                                                  field_distribution)
                     other_value = helpers.traverse_dict(
                         other_distribution, field_distribution)
                 else:
@@ -588,12 +582,13 @@ def datasets_equal(dataset, other, fields_dataset=None,
 
                 if value != other_value:
                     dataset_diff.append({
-                        "error_location": "{} ({})".format(
-                            field_distribution,
-                            dataset_distribution.get("title")
-                        ),
-                        "dataset_value": value,
-                        "other_value": other_value
+                        "error_location":
+                        "{} ({})".format(field_distribution,
+                                         dataset_distribution.get("title")),
+                        "dataset_value":
+                        value,
+                        "other_value":
+                        other_value
                     })
                     distributions_equal = False
 
